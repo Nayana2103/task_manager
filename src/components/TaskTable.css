@@ -1,35 +1,47 @@
-.task-card {
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
+.task-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   padding: 20px;
-  margin: 20px;
-  font-family: Arial, sans-serif;
 }
 
-.task-header {
+.task-desc {
+  display: flex;
+  align-items: center; 
+  gap: 4px;            
+  font-size: 16px;     
+  color: #333;          
+}
+
+.task-desc .calendar-icon {
+  font-size: 12px;      
+  color: #2091c6;      
+}
+
+.task-header-box {
+  background: #fff;
+  border: 1px solid #ddd;
+  padding: 16px;
+  border-radius: 6px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
-  position: relative;
 }
 
-.task-header h2 {
+.task-header-box h2 {
   font-size: 18px;
   font-weight: 600;
+  margin: 0;
 }
 
-.task-header p {
+.task-header-box p {
   font-size: 13px;
   color: #666;
-  position: absolute;
-  top: 28px;
-  left: 0;
+  margin: 4px 0 0 0;
 }
 
 .create-btn {
-  background: #0d6efd;
+  background: #2091c6;
   color: white;
   border: none;
   padding: 8px 14px;
@@ -38,13 +50,27 @@
   font-size: 14px;
 }
 .create-btn:hover {
-  background: #0b5ed7;
+  background: #2091c6;
 }
 
+/* Second white box */
+.task-body-box {
+  background: #fff;
+  border: 1px solid #ddd;
+  padding: 16px;
+  border-radius: 6px;
+}
+
+/* Filter row */
+.filter-row-wrapper {
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;           
+  margin-bottom: 10px;
+}
 .filter-row {
   display: flex;
-  gap: 10px;
-  margin: 15px 0;
+  gap: 8px; 
 }
 
 .filter-row select,
@@ -63,6 +89,7 @@
   cursor: pointer;
 }
 
+/* Tabs */
 .tabs {
   display: flex;
   gap: 20px;
@@ -81,8 +108,8 @@
 }
 
 .tab.active {
-  color: #0d6efd;
-  border-bottom: 2px solid #0d6efd;
+  color: #2091c6;
+  border-bottom: 2px solid #2091c6;
   font-weight: bold;
 }
 
@@ -94,6 +121,7 @@
   margin-left: 5px;
 }
 
+/* Table */
 .table-wrapper {
   overflow-x: auto;
   margin-top: 10px;
@@ -106,16 +134,31 @@
 
 .task-table th,
 .task-table td {
-  border: 1px solid #ddd;
+  border: 1px solid #cebaba;
   padding: 10px;
   font-size: 14px;
   text-align: left;
 }
 
 .task-table th {
-  background: #f3f4f6;
+  background: #dbe1ea;
   font-weight: 600;
 }
+
+.task-table th.sortable {
+  position: relative;          
+  text-align: left;           
+  padding-right: 24px;        
+}
+
+.task-table th.sortable svg {
+  position: absolute;
+  top: 14px;                   
+  right: 6px;              
+  font-size: 12px;            
+  color: #2b2121;                 
+  cursor: pointer;
+  pointer-events: none;  }      
 
 .no-records {
   text-align: center;
@@ -123,22 +166,43 @@
   padding: 20px;
 }
 
+/* Footer */
 .table-footer {
   margin-top: 10px;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end; 
   font-size: 13px;
   color: #666;
 }
 
 .footer-btn {
   margin-left: 10px;
-  border: 1px solid #ccc;
+  border: 1px solid #2091c6;
   background: #f8f9fa;
-  padding: 5px 10px;
+  padding: 4px 10px;
   border-radius: 4px;
   cursor: pointer;
 }
 .footer-btn:hover {
   background: #e2e6ea;
+}
+
+.side-buttons {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+  color:#2091c6;
+  font-size: 12px;
+}
+
+.header-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.header-cell svg {
+  font-size: 12px;
+  color: #555;
 }
