@@ -1,12 +1,9 @@
-import React from "react";
-import TaskForm from "./components/TaskForm";
-
-
+import TaskTable from "./components/TaskTable";
 
 function App() {
   return (
-    <div>
-      <TaskForm />
+    <div style={{ minHeight: "100vh", background: "#f3f4f6", padding: 24 }}>
+      <TaskTable />
     </div>
   );
 }
