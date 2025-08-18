@@ -1,5 +1,5 @@
 import React from "react";
-import "../styles/TaskForm.css"
+import "../styles/TaskForm.css";
 
 function TaskForm() {
   return (
@@ -76,8 +76,12 @@ function TaskForm() {
       </div>
 
       <div className="form-actions">
-        <button type="submit" className="btn-primary">Save</button>
-        <button type="button" className="btn-secondary">Cancel</button>
+        <button type="submit" className="btn-primary">
+          Save
+        </button>
+        <button type="button" className="btn-secondary">
+          Cancel
+        </button>
       </div>
     </div>
   );
