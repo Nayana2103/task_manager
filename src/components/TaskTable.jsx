@@ -6,7 +6,8 @@ import { FaSort, FaCalendarAlt } from "react-icons/fa";
 const TaskTable = () => {
   const [activeTab, setActiveTab] = useState("Open");
   const [search, setSearch] = useState("");
-  const [selectedColumn, setSelectedColumn] = useState(""); 
+  const [selectedColumn, setSelectedColumn] = useState("");
+
   const navigate = useNavigate();
 
   const tabs = [
@@ -16,7 +17,6 @@ const TaskTable = () => {
     { name: "Completed", count: 1 },
   ];
 
-  
   const allTasks = [
     {
       id: "T-101",
@@ -56,14 +56,12 @@ const TaskTable = () => {
     },
   ];
 
- 
   const filteredTasks = allTasks.filter((task) => {
     const matchesTab = task.status === activeTab;
 
     if (search.trim() === "") return matchesTab;
 
     if (selectedColumn === "all") {
-      
       return (
         matchesTab &&
         Object.values(task)
@@ -72,7 +70,6 @@ const TaskTable = () => {
           .includes(search.toLowerCase())
       );
     } else if (selectedColumn) {
-     
       const value = String(task[selectedColumn])?.toLowerCase();
       return matchesTab && value.includes(search.toLowerCase());
     }
@@ -98,6 +95,9 @@ const TaskTable = () => {
 
       {/* ===== Second White Box ===== */}
       <div className="task-body-box">
+        {/* === Filter Heading === */}
+        <h3 className="filter-heading">Filter:</h3>
+
         {/* Filter Row */}
         <div className="filter-row-wrapper">
           <div className="filter-row">
