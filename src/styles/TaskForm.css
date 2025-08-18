@@ -1,57 +1,82 @@
-body {
-  font-family: "Satoshi", sans-serif;
-  background: #f9f9f9;
-  margin: 0;
-  padding: 20px;
+/* Container that centers the form like a modal */
+.task-form-container {
+  position: fixed;        /* stays fixed in viewport */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+   /* light dim background (optional) */
+  z-index: 1000;          /* ensure it stays above other content */
 }
-
+.form-divider {
+  border: 0;
+  border-top: 1px solid #e5e7eb;
+  margin: 20px 0;
+}
+/* Modal-like form */
 .task-form {
-  max-width: 800px;
-  margin: auto;
+   width: 60vw;             /* ✅ now takes 60% of screen width */
+  max-height: 90vh;        /* leave some breathing space */
   background: #fff;
-  padding: 25px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  padding: 16px;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2); /* lifted effect */
+  overflow-y: auto;
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+
+  /* hide scrollbar */
+  scrollbar-width: none;     /* Firefox */
+  -ms-overflow-style: none;  /* IE/Edge */
+}
+.task-form::-webkit-scrollbar {
+  display: none;             /* Chrome/Safari */
 }
 
+/* Title */
 .form-title {
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 600;
-  margin-bottom: 20px;
+  margin-bottom: 12px;
   color: #333;
 }
 
+/* Grid */
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 18px;
+  gap: 10px;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
 }
-
 .form-group.full {
   grid-column: span 2;
 }
 
 label {
-  font-size: 14px;
-  margin-bottom: 6px;
+  font-size: 12px;
+  margin-bottom: 3px;
   color: #555;
 }
 
-input, select, textarea {
-  padding: 10px;
+input,
+select,
+textarea {
+  padding: 5px 7px;
   border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 14px;
+  border-radius: 4px;
+  font-size: 12px;
   font-family: inherit;
 }
 
 textarea {
-  min-height: 80px;
+  min-height: 50px;
   resize: vertical;
 }
 
@@ -60,22 +85,25 @@ input:disabled {
   color: #888;
 }
 
+/* Actions */
 .form-actions {
-  margin-top: 25px;
+  margin-top: 14px;
   display: flex;
-  gap: 12px;
+  gap: 8px;
+  justify-content: flex-end;
 }
 
 .btn-primary {
   background: #2563eb;
   color: white;
-  padding: 10px 18px;
+  padding: 6px 12px;
   border: none;
-  border-radius: 6px;
+  border-radius: 4px;
   cursor: pointer;
   font-weight: 500;
+  font-size: 12px;
+  transition: background 0.2s ease;
 }
-
 .btn-primary:hover {
   background: #1d4ed8;
 }
@@ -83,8 +111,9 @@ input:disabled {
 .btn-secondary {
   background: #e5e7eb;
   color: #111;
-  padding: 10px 18px;
+  padding: 6px 12px;
   border: none;
-  border-radius: 6px;
+  border-radius: 4px;
   cursor: pointer;
+  font-size: 12px;
 }
