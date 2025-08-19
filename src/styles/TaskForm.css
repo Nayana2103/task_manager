@@ -130,7 +130,7 @@ input:disabled {
 
 /* Chrome/Edge (input, textarea) */
 input::-webkit-clear-button,
-input::-webkit-search-cancel-button,
+
 textarea::-webkit-clear-button {
   -webkit-appearance: none !important;
   appearance: none !important;
@@ -144,26 +144,20 @@ textarea::-moz-clear {
 }
 /* Keep this for Ant Design modal */
 /* Make sure close button sits at the real corner of the white box */
-.ant-modal .ant-modal-close {
-  position: absolute !important;
-  top: 8px !important;   /* smaller offset, ignores padding */
-  right: 8px !important;
-  z-index: 1001;         /* higher than form content */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #333;
-  font-size: 20px;
+
+/* ===== Custom Close Button (for your task-form) ===== */
+.task-form .close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
   background: transparent;
   border: none;
+  font-size: 12px;
+  color: #666;
   cursor: pointer;
+  transition: color 0.2s ease;
 }
 
-.ant-modal .ant-modal-close:hover {
-  color: #ff4d4f;
-}
-.error {
-  color: red;
-  font-size: 0.8rem;
-  margin-top: 4px;
+.task-form .close-btn:hover {
+  color: #ff4d4f; /* red hover */
 }

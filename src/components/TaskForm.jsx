@@ -34,6 +34,13 @@ function TaskForm({ onClose }) {
   return (
     <div className="task-form-container">
       <div className="task-form">
+         <button
+      type="button"
+      className="close-btn"
+      onClick={onClose}  // pass this prop from parent
+    >
+      ✕
+    </button>
         <h2 className="form-title">Create Task</h2>
 
         <form onSubmit={handleSubmit(onSubmit)}>
