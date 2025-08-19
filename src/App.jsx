@@ -5,7 +5,7 @@ import "./styles/style.css";
 
 function App() {
   return (
-    <Router basename="/task_manager/dist">
+    <Router>
       <Routes>
         <Route path="/" element={<TaskTable />} />
         
