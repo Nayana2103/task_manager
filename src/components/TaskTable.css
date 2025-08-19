@@ -206,3 +206,42 @@
   font-size: 12px;
   color: #555;
 }
+
+.filter-heading {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: black;
+}
+
+
+.filter-row select {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 6px;
+  font-size: 14px;
+  color: #666;              /* same text color */
+  background-color: #fff;   /* same background */
+  appearance: none;         
+  -webkit-appearance: none; 
+  -moz-appearance: none;    
+}
+
+/* Fix Ant Design modal close button position */
+.ant-modal-close {
+  position: absolute !important;
+  top: 16px !important;
+  right: 16px !important;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #333;
+  font-size: 18px;
+}
+
+.ant-modal-close:hover {
+  color: #ff4d4f; /* red hover */
+}
+
+

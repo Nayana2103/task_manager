@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
-  base: "./",   // 👈 important: relative paths for Live Server
+  base: "/task_manager/",   // 👈 important for GitHub Pages
   plugins: [react(), tailwindcss()],
   build: {
     rollupOptions: {
