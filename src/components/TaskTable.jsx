@@ -1,80 +1,74 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./TaskTable.css";
-import { useNavigate } from "react-router-dom";
 import { FaSort, FaCalendarAlt } from "react-icons/fa";
+import { Modal, Button } from "antd";
+import TaskForm from "./TaskForm"; // ✅ Make sure TaskForm exists
 
 const TaskTable = () => {
   const [activeTab, setActiveTab] = useState("Open");
   const [search, setSearch] = useState("");
   const [selectedColumn, setSelectedColumn] = useState("");
 
-  const navigate = useNavigate();
+  const [openTasks, setOpenTasks] = useState([]);
+  const [pendingTasks, setPendingTasks] = useState([]);
+  const [inProgressTasks, setInProgressTasks] = useState([]);
+  const [completedTasks, setCompletedTasks] = useState([]);
+
+  const [loadedTabs, setLoadedTabs] = useState({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const tabs = [
-    { name: "Open", count: 1 },
-    { name: "Pending", count: 1 },
-    { name: "In Progress", count: 1 },
-    { name: "Completed", count: 1 },
+    { name: "Open" },
+    { name: "Pending" },
+    { name: "In Progress" },
+    { name: "Completed" },
   ];
 
-  const allTasks = [
-    {
-      id: "T-101",
-      priority: "High",
-      createdBy: "Alice",
-      type: "Bug",
-      subType: "UI",
-      name: "Fix header alignment",
-      status: "Open",
-    },
-    {
-      id: "T-102",
-      priority: "Medium",
-      createdBy: "Bob",
-      type: "Feature",
-      subType: "Backend",
-      name: "Add API endpoint",
-      status: "Pending",
-    },
-    {
-      id: "T-103",
-      priority: "Low",
-      createdBy: "Charlie",
-      type: "Task",
-      subType: "Docs",
-      name: "Update README",
-      status: "In Progress",
-    },
-    {
-      id: "T-104",
-      priority: "High",
-      createdBy: "Diana",
-      type: "Bug",
-      subType: "API",
-      name: "Fix login issue",
-      status: "Completed",
-    },
-  ];
+  // Fetch tasks when tab changes
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        if (loadedTabs[activeTab]) return;
 
-  const filteredTasks = allTasks.filter((task) => {
-    const matchesTab = task.status === activeTab;
+        let response = await fetch(`/api/tasks?status=${activeTab}`);
+        let data = await response.json();
 
-    if (search.trim() === "") return matchesTab;
+        if (activeTab === "Open") setOpenTasks(data);
+        else if (activeTab === "Pending") setPendingTasks(data);
+        else if (activeTab === "In Progress") setInProgressTasks(data);
+        else if (activeTab === "Completed") setCompletedTasks(data);
+
+        setLoadedTabs((prev) => ({ ...prev, [activeTab]: true }));
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
+      }
+    };
+
+    fetchTasks();
+  }, [activeTab, loadedTabs]);
+
+  const currentTasks =
+    activeTab === "Open"
+      ? openTasks
+      : activeTab === "Pending"
+      ? pendingTasks
+      : activeTab === "In Progress"
+      ? inProgressTasks
+      : completedTasks;
+
+  const filteredTasks = currentTasks.filter((task) => {
+    if (search.trim() === "") return true;
 
     if (selectedColumn === "all") {
-      return (
-        matchesTab &&
-        Object.values(task)
-          .join(" ")
-          .toLowerCase()
-          .includes(search.toLowerCase())
-      );
+      return Object.values(task)
+        .join(" ")
+        .toLowerCase()
+        .includes(search.toLowerCase());
     } else if (selectedColumn) {
       const value = String(task[selectedColumn])?.toLowerCase();
-      return matchesTab && value.includes(search.toLowerCase());
+      return value.includes(search.toLowerCase());
     }
-
-    return matchesTab;
+    return true;
   });
 
   return (
@@ -88,17 +82,36 @@ const TaskTable = () => {
             Manage your tasks.
           </p>
         </div>
-        <button className="create-btn" onClick={() => navigate("/create")}>
+
+        {/* ✅ Open Modal instead of navigate */}
+        <Button type="primary" onClick={() => setIsModalOpen(true)}>
           + Create
-        </button>
+        </Button>
       </div>
+
+      {/* ===== Task Form Modal ===== */}
+<Modal
+  title="Create Task"
+  open={isModalOpen}
+  onCancel={() => setIsModalOpen(false)}
+  footer={null}
+  width={600}
+  centered
+  closable={true}
+  transitionName=""
+  maskTransitionName=""
+ 
+ 
+>
+  <TaskForm onClose={() => setIsModalOpen(false)} />
+</Modal>
+
+
 
       {/* ===== Second White Box ===== */}
       <div className="task-body-box">
-        {/* === Filter Heading === */}
         <h3 className="filter-heading">Filter:</h3>
 
-        {/* Filter Row */}
         <div className="filter-row-wrapper">
           <div className="filter-row">
             <select
@@ -120,11 +133,36 @@ const TaskTable = () => {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
-            <button className="filter-btn">Filter</button>
+            <button
+              className="filter-btn"
+              onClick={() => {
+                fetch(
+                  `/api/tasks?status=${activeTab}&column=${selectedColumn}&search=${search}`
+                )
+                  .then((res) => res.json())
+                  .then((data) => {
+                    if (activeTab === "Open") setOpenTasks(data);
+                    else if (activeTab === "Pending") setPendingTasks(data);
+                    else if (activeTab === "In Progress")
+                      setInProgressTasks(data);
+                    else if (activeTab === "Completed")
+                      setCompletedTasks(data);
+                  });
+              }}
+            >
+              Filter
+            </button>
           </div>
 
           <div className="side-buttons">
-            <button className="footer-btn">⟳ Refresh</button>
+            <button
+              className="footer-btn"
+              onClick={() =>
+                setLoadedTabs((prev) => ({ ...prev, [activeTab]: false }))
+              }
+            >
+              ⟳ Refresh
+            </button>
             <button className="footer-btn">Export to CSV</button>
           </div>
         </div>
@@ -137,8 +175,7 @@ const TaskTable = () => {
               className={`tab ${activeTab === tab.name ? "active" : ""}`}
               onClick={() => setActiveTab(tab.name)}
             >
-              {tab.name}{" "}
-              {tab.count > 0 && <span className="count">{tab.count}</span>}
+              {tab.name}
             </button>
           ))}
         </div>
