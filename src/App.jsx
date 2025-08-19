@@ -1,7 +1,8 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import TaskTable from "./components/TaskTable";
 import TaskForm from "./components/TaskForm";
-import "./styles/style.css"
+import "./styles/style.css";
+
 function App() {
   return (
     <Router>
