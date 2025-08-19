@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "../styles/TaskForm.css";
 
 function TaskForm({ onClose }) {
@@ -12,10 +14,27 @@ function TaskForm({ onClose }) {
     reset,
   } = useForm();
 
+  // ✅ Success handler
   const onSubmit = (data) => {
     console.log("✅ Form Submitted:", data);
+
+   toast.success("Task created successfully!", {
+      position: "top-right",
+      autoClose: 2000,
+    });
+
     reset();
     if (onClose) onClose();
+  };
+
+  // ❌ Error handler (shows toast for each field error)
+  const onError = (formErrors) => {
+    Object.values(formErrors).forEach((err) => {
+      toast.error(err.message, {
+        position: "top-right",
+        autoClose: 2000,
+      });
+    });
   };
 
   const getPriorityClass = () => {
@@ -36,7 +55,8 @@ function TaskForm({ onClose }) {
       <div className="task-form">
         <h2 className="form-title">Create Task</h2>
 
-        <form onSubmit={handleSubmit(onSubmit)}>
+        {/* 🔹 handleSubmit now also takes onError */}
+        <form onSubmit={handleSubmit(onSubmit, onError)}>
           {/* ---------------- Guest Details Section ---------------- */}
           <h3 className="section-title">Guest Details</h3>
           <div className="form-grid">
