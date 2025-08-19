@@ -1,55 +1,65 @@
 import React, { useState, useEffect } from "react";
 import "./TaskTable.css";
 import { FaSort, FaCalendarAlt } from "react-icons/fa";
-import { Modal, Button } from "antd";
-import TaskForm from "./TaskForm"; // ✅ Make sure TaskForm exists
+import TaskModal from "./TaskModal";
 
 const TaskTable = () => {
   const [activeTab, setActiveTab] = useState("Open");
   const [search, setSearch] = useState("");
   const [selectedColumn, setSelectedColumn] = useState("");
 
-  const [openTasks, setOpenTasks] = useState([]);
-  const [pendingTasks, setPendingTasks] = useState([]);
-  const [inProgressTasks, setInProgressTasks] = useState([]);
-  const [completedTasks, setCompletedTasks] = useState([]);
+  const [openTasks, setOpenTasks] = useState([
+    { id: "O1", priority: "High", createdBy: "Alice", type: "Bug", subType: "UI", name: "Fix login issue" },
+    { id: "O2", priority: "Medium", createdBy: "Bob", type: "Feature", subType: "Dashboard", name: "Add analytics tab" },
+  ]);
+
+  const [pendingTasks, setPendingTasks] = useState([
+    { id: "P1", priority: "Low", createdBy: "Charlie", type: "Bug", subType: "API", name: "Check timeout error" },
+  ]);
+
+  const [inProgressTasks, setInProgressTasks] = useState([
+    { id: "IP1", priority: "High", createdBy: "Diana", type: "Feature", subType: "Auth", name: "Implement OTP login" },
+  ]);
+
+  const [completedTasks, setCompletedTasks] = useState([
+    { id: "C1", priority: "Medium", createdBy: "Eve", type: "Bug", subType: "UI", name: "Fix header alignment" },
+  ]);
 
   const [loadedTabs, setLoadedTabs] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // ✅ ADD COUNTS TO TABS
   const tabs = [
-    { name: "Open" },
-    { name: "Pending" },
-    { name: "In Progress" },
-    { name: "Completed" },
+    { name: "Open", count: openTasks.length },
+    { name: "Pending", count: pendingTasks.length },
+    { name: "In Progress", count: inProgressTasks.length },
+    { name: "Completed", count: completedTasks.length },
   ];
 
-  // ✅ Fetch tasks when tab changes
+  const fetchTasks = async (status = activeTab) => {
+    if (loadedTabs[status]) return;
+    try {
+      const response = await fetch(
+        `/api/tasks?status=${status}&column=${selectedColumn}&search=${search}`
+      );
+      if (!response.ok) throw new Error("Failed to fetch");
+      const data = await response.json();
+
+      if (status === "Open") setOpenTasks(data);
+      else if (status === "Pending") setPendingTasks(data);
+      else if (status === "In Progress") setInProgressTasks(data);
+      else if (status === "Completed") setCompletedTasks(data);
+
+      setLoadedTabs((prev) => ({ ...prev, [status]: true }));
+    } catch (err) {
+      console.error("Error fetching tasks:", err);
+    }
+  };
+
   useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        if (loadedTabs[activeTab]) return;
+    fetchTasks(activeTab);
+  }, [activeTab, search, selectedColumn]);
 
-        let response = await fetch(
-          `/api/tasks?status=${activeTab}&column=${selectedColumn}&search=${search}`
-        );
-        let data = await response.json();
-
-        if (activeTab === "Open") setOpenTasks(data);
-        else if (activeTab === "Pending") setPendingTasks(data);
-        else if (activeTab === "In Progress") setInProgressTasks(data);
-        else if (activeTab === "Completed") setCompletedTasks(data);
-
-        setLoadedTabs((prev) => ({ ...prev, [activeTab]: true }));
-      } catch (error) {
-        console.error("Error fetching tasks:", error);
-      }
-    };
-
-    fetchTasks();
-  }, [activeTab, loadedTabs, search, selectedColumn]);
-
-  
   const currentTasks =
     activeTab === "Open"
       ? openTasks
@@ -59,9 +69,42 @@ const TaskTable = () => {
       ? inProgressTasks
       : completedTasks;
 
+  const handleRefresh = () => {
+    setLoadedTabs((prev) => ({ ...prev, [activeTab]: false }));
+    fetchTasks(activeTab);
+  };
+
+  const handleExportCSV = () => {
+    if (!currentTasks.length) {
+      alert("No tasks available to export.");
+      return;
+    }
+
+    const headers = ["Task Id", "Priority", "Created By", "Type", "Sub Type", "Task Name"];
+    const rows = currentTasks.map((task) => [
+      task.id,
+      task.priority,
+      task.createdBy,
+      task.type,
+      task.subType,
+      task.name,
+    ]);
+
+    let csvContent =
+      "data:text/csv;charset=utf-8," +
+      [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute("download", `${activeTab}_tasks.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="task-container">
-      {/* ===== First White Box ===== */}
       <div className="task-header-box">
         <div>
           <h2 className="task-title">Tasks</h2>
@@ -70,32 +113,16 @@ const TaskTable = () => {
             Manage your tasks.
           </p>
         </div>
-
-        {/* ✅ Open Modal instead of navigate */}
-        <Button type="primary" onClick={() => setIsModalOpen(true)}>
+        <button className="btn-primary" onClick={() => setIsModalOpen(true)}>
           + Create
-        </Button>
+        </button>
       </div>
 
-      {/* ===== Task Form Modal ===== */}
-      <Modal
-        title="Create Task"
-        open={isModalOpen}
-        onCancel={() => setIsModalOpen(false)}
-        footer={null}
-        width={600}
-        centered
-        closable={true}
-        transitionName=""
-        maskTransitionName=""
-      >
-        <TaskForm onClose={() => setIsModalOpen(false)} />
-      </Modal>
+      <TaskModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
 
-      {/* ===== Second White Box ===== */}
+      {/* Filters */}
       <div className="task-body-box">
         <h3 className="filter-heading">Filter:</h3>
-
         <div className="filter-row-wrapper">
           <div className="filter-row">
             <select
@@ -126,21 +153,17 @@ const TaskTable = () => {
               Filter
             </button>
           </div>
-
           <div className="side-buttons">
-            <button
-              className="footer-btn"
-              onClick={() =>
-                setLoadedTabs((prev) => ({ ...prev, [activeTab]: false }))
-              }
-            >
+            <button className="footer-btn" onClick={handleRefresh}>
               ⟳ Refresh
             </button>
-            <button className="footer-btn">Export to CSV</button>
+            <button className="footer-btn" onClick={handleExportCSV}>
+              Export to CSV
+            </button>
           </div>
         </div>
 
-        {/* Tabs */}
+        {/* ✅ Tabs with count */}
         <div className="tabs">
           {tabs.map((tab) => (
             <button
@@ -148,10 +171,10 @@ const TaskTable = () => {
               className={`tab ${activeTab === tab.name ? "active" : ""}`}
               onClick={() => {
                 setActiveTab(tab.name);
-                setLoadedTabs((prev) => ({ ...prev, [tab.name]: false })); // ✅ reload on tab switch
+                setLoadedTabs((prev) => ({ ...prev, [tab.name]: false }));
               }}
             >
-              {tab.name}
+              {tab.name} ({tab.count})
             </button>
           ))}
         </div>
@@ -162,23 +185,41 @@ const TaskTable = () => {
             <thead>
               <tr>
                 <th>Action</th>
-                <th className="sortable">
-                  Task Id <FaSort />
+                <th>
+                  <div className="th-content">
+                    <span>Task Id</span>
+                    <FaSort className="sort-icon" />
+                  </div>
                 </th>
-                <th className="sortable">
-                  Priority <FaSort />
+                <th>
+                  <div className="th-content">
+                    <span>Priority</span>
+                    <FaSort className="sort-icon" />
+                  </div>
                 </th>
-                <th className="sortable">
-                  Created By <FaSort />
+                <th>
+                  <div className="th-content">
+                    <span>Created By</span>
+                    <FaSort className="sort-icon" />
+                  </div>
                 </th>
-                <th className="sortable">
-                  Type <FaSort />
+                <th>
+                  <div className="th-content">
+                    <span>Type</span>
+                    <FaSort className="sort-icon" />
+                  </div>
                 </th>
-                <th className="sortable">
-                  Sub Type <FaSort />
+                <th>
+                  <div className="th-content">
+                    <span>Sub Type</span>
+                    <FaSort className="sort-icon" />
+                  </div>
                 </th>
-                <th className="sortable">
-                  Task Name <FaSort />
+                <th>
+                  <div className="th-content">
+                    <span>Task Name</span>
+                    <FaSort className="sort-icon" />
+                  </div>
                 </th>
               </tr>
             </thead>
@@ -186,9 +227,7 @@ const TaskTable = () => {
               {currentTasks.length > 0 ? (
                 currentTasks.map((task, idx) => (
                   <tr key={idx}>
-                    <td>
-                      <button>⋮</button>
-                    </td>
+                    <td><button>⋮</button></td>
                     <td>{task.id}</td>
                     <td>{task.priority}</td>
                     <td>{task.createdBy}</td>
@@ -208,7 +247,6 @@ const TaskTable = () => {
           </table>
         </div>
 
-        {/* Footer */}
         <div className="table-footer">
           <span>Total Records: {currentTasks.length}</span>
         </div>

@@ -1,11 +1,11 @@
 import React, { useState } from "react";
+import { Modal, Button, message  } from "antd";
 import { useForm } from "react-hook-form";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import "../styles/TaskForm.css";
 
-function TaskForm({ onClose }) {
+const TaskModal = ({ isOpen, onClose }) => {
   const [priority, setPriority] = useState("Medium");
+    const [messageApi, contextHolder] = message.useMessage(); 
 
   const {
     register,
@@ -13,29 +13,6 @@ function TaskForm({ onClose }) {
     formState: { errors },
     reset,
   } = useForm();
-
-  // ✅ Success handler
-  const onSubmit = (data) => {
-    console.log("✅ Form Submitted:", data);
-
-   toast.success("Task created successfully!", {
-      position: "top-right",
-      autoClose: 2000,
-    });
-
-    reset();
-    if (onClose) onClose();
-  };
-
-  // ❌ Error handler (shows toast for each field error)
-  const onError = (formErrors) => {
-    Object.values(formErrors).forEach((err) => {
-      toast.error(err.message, {
-        position: "top-right",
-        autoClose: 2000,
-      });
-    });
-  };
 
   const getPriorityClass = () => {
     switch (priority) {
@@ -50,17 +27,31 @@ function TaskForm({ onClose }) {
     }
   };
 
-  return (
-    <div className="task-form-container">
-      <div className="task-form">
-        <h2 className="form-title">Create Task</h2>
+  const onSubmit = (data) => {
+    console.log("Form Submitted:", data);
+     messageApi.success("Task created successfully ");
+    reset();
+    onClose();
+  };
 
-        {/* 🔹 handleSubmit now also takes onError */}
-        <form onSubmit={handleSubmit(onSubmit, onError)}>
-          {/* ---------------- Guest Details Section ---------------- */}
+  return (
+     <>
+      {contextHolder} 
+    <Modal
+      title="Create Task"
+      open={isOpen}
+      onCancel={onClose}
+      footer={null}
+      width={600}
+      centered
+      closable={true}
+      transitionName=""
+      maskTransitionName=""
+    >
+      <div className="task-form">
+        <form onSubmit={handleSubmit(onSubmit)}>
           <h3 className="section-title">Guest Details</h3>
           <div className="form-grid">
-            {/* Name */}
             <div className="form-group half">
               <label>Name</label>
               <input
@@ -71,7 +62,6 @@ function TaskForm({ onClose }) {
               {errors.name && <p className="error">{errors.name.message}</p>}
             </div>
 
-            {/* Email */}
             <div className="form-group half">
               <label>Email</label>
               <input
@@ -88,13 +78,11 @@ function TaskForm({ onClose }) {
               {errors.email && <p className="error">{errors.email.message}</p>}
             </div>
 
-            {/* Created By */}
             <div className="form-group half">
               <label>Created By</label>
               <input type="text" value="Mohamed Rifthy" disabled />
             </div>
 
-            {/* Assigned To */}
             <div className="form-group half">
               <label>Assigned To</label>
               <select
@@ -104,18 +92,13 @@ function TaskForm({ onClose }) {
                 <option value="Agent A">Agent A</option>
                 <option value="Agent B">Agent B</option>
               </select>
-              {errors.assignedTo && (
-                <p className="error">{errors.assignedTo.message}</p>
-              )}
+              {errors.assignedTo && <p className="error">{errors.assignedTo.message}</p>}
             </div>
           </div>
 
           <hr className="form-divider" />
-
-          {/* ---------------- Task Details Section ---------------- */}
           <h3 className="section-title">Task Details</h3>
           <div className="form-grid">
-            {/* Task Name */}
             <div className="form-group full">
               <label>Task Name</label>
               <input
@@ -123,28 +106,20 @@ function TaskForm({ onClose }) {
                 placeholder="Enter Task Name"
                 {...register("taskName", { required: "Task name is required" })}
               />
-              {errors.taskName && (
-                <p className="error">{errors.taskName.message}</p>
-              )}
+              {errors.taskName && <p className="error">{errors.taskName.message}</p>}
             </div>
 
-            {/* Task Type */}
             <div className="form-group full">
               <label>Task Type</label>
-              <select
-                {...register("taskType", { required: "Task type is required" })}
-              >
+              <select {...register("taskType", { required: "Task type is required" })}>
                 <option value="">Select Type</option>
                 <option value="Bug">Bug</option>
                 <option value="Feature">Feature</option>
                 <option value="Improvement">Improvement</option>
               </select>
-              {errors.taskType && (
-                <p className="error">{errors.taskType.message}</p>
-              )}
+              {errors.taskType && <p className="error">{errors.taskType.message}</p>}
             </div>
 
-            {/* Task Details */}
             <div className="form-group full">
               <label>Task Details</label>
               <textarea
@@ -154,7 +129,6 @@ function TaskForm({ onClose }) {
               {errors.details && <p className="error">{errors.details.message}</p>}
             </div>
 
-            {/* Priority */}
             <div className="form-group half">
               <label>Priority</label>
               <select
@@ -170,7 +144,6 @@ function TaskForm({ onClose }) {
               {errors.priority && <p className="error">{errors.priority.message}</p>}
             </div>
 
-            {/* Status */}
             <div className="form-group half">
               <label>Status</label>
               <select defaultValue="Open" {...register("status")}>
@@ -180,17 +153,11 @@ function TaskForm({ onClose }) {
               </select>
             </div>
 
-            {/* Engagement */}
             <div className="form-group full">
               <label>Engagement</label>
-              <input
-                type="text"
-                placeholder="Enter Engagement"
-                {...register("engagement")}
-              />
+              <input type="text" placeholder="Enter Engagement" {...register("engagement")} />
             </div>
 
-            {/* Dates */}
             <div className="form-group half">
               <label>Start Date</label>
               <input type="date" {...register("startDate")} />
@@ -200,31 +167,23 @@ function TaskForm({ onClose }) {
               <input type="date" {...register("endDate")} />
             </div>
 
-            {/* Remarks */}
             <div className="form-group full">
               <label>Remarks</label>
               <textarea placeholder="Enter Remarks" {...register("remarks")}></textarea>
             </div>
           </div>
 
-          {/* ---------------- Actions ---------------- */}
           <div className="form-actions">
             <button type="submit" className="btn-primary">Save</button>
-            <button
-              type="button"
-              className="btn-secondary"
-              onClick={() => {
-                reset();
-                if (onClose) onClose();
-              }}
-            >
+            <button type="button" className="btn-secondary" onClick={() => { reset(); onClose(); }}>
               Cancel
             </button>
           </div>
         </form>
       </div>
-    </div>
+    </Modal>
+    </>
   );
-}
+};
 
-export default TaskForm;
+export default TaskModal;

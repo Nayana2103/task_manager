@@ -245,3 +245,14 @@
 }
 
 
+.th-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* pushes text to left, icon to right */
+  width: 100%; /* makes it stretch full th cell */
+}
+
+.sort-icon {
+  font-size: 14px;
+  cursor: pointer;
+}
