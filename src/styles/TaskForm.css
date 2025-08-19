@@ -1,6 +1,6 @@
-/* Container that centers the form like a modal */
+/* ===== Modal Container ===== */
 .task-form-container {
-  position: fixed;        /* stays fixed in viewport */
+  position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
@@ -8,35 +8,42 @@
   display: flex;
   justify-content: center;
   align-items: center;
-   /* light dim background (optional) */
-  z-index: 1000;          /* ensure it stays above other content */
+  background: rgba(0, 0, 0, 0.4); /* dimmed backdrop */
+  z-index: 1000;
 }
+
+/* ===== Divider ===== */
 .form-divider {
   border: 0;
   border-top: 1px solid #e5e7eb;
   margin: 20px 0;
 }
-/* Modal-like form */
+
+/* ===== Modal-like Form ===== */
 .task-form {
-   width: 60vw;             /* ✅ now takes 60% of screen width */
-  max-height: 90vh;        /* leave some breathing space */
+  position: relative;
+  width: 60vw;
+  max-height: 90vh;
   background: #fff;
   padding: 16px;
   border-radius: 10px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.2); /* lifted effect */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
   overflow-y: auto;
   box-sizing: border-box;
   scroll-behavior: smooth;
 
-  /* hide scrollbar */
-  scrollbar-width: none;     /* Firefox */
-  -ms-overflow-style: none;  /* IE/Edge */
+  /* Hide scrollbars */
+  scrollbar-width: none; 
+  -ms-overflow-style: none;
 }
 .task-form::-webkit-scrollbar {
-  display: none;             /* Chrome/Safari */
+  display: none;
 }
 
-/* Title */
+/* ===== Close Button ===== */
+
+
+/* ===== Title ===== */
 .form-title {
   font-size: 16px;
   font-weight: 600;
@@ -44,7 +51,7 @@
   color: #333;
 }
 
-/* Grid */
+/* ===== Grid ===== */
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -65,6 +72,7 @@ label {
   color: #555;
 }
 
+/* ===== Inputs ===== */
 input,
 select,
 textarea {
@@ -85,7 +93,7 @@ input:disabled {
   color: #888;
 }
 
-/* Actions */
+/* ===== Actions ===== */
 .form-actions {
   margin-top: 14px;
   display: flex;
@@ -116,4 +124,46 @@ input:disabled {
   border-radius: 4px;
   cursor: pointer;
   font-size: 12px;
+}
+
+/* ===== Remove ❌ clear icons ===== */
+
+/* Chrome/Edge (input, textarea) */
+input::-webkit-clear-button,
+input::-webkit-search-cancel-button,
+textarea::-webkit-clear-button {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  display: none !important;
+}
+
+/* Firefox */
+input[type="text"]::-moz-clear,
+textarea::-moz-clear {
+  display: none !important;
+}
+/* Keep this for Ant Design modal */
+/* Make sure close button sits at the real corner of the white box */
+.ant-modal .ant-modal-close {
+  position: absolute !important;
+  top: 8px !important;   /* smaller offset, ignores padding */
+  right: 8px !important;
+  z-index: 1001;         /* higher than form content */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #333;
+  font-size: 20px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.ant-modal .ant-modal-close:hover {
+  color: #ff4d4f;
+}
+.error {
+  color: red;
+  font-size: 0.8rem;
+  margin-top: 4px;
 }
