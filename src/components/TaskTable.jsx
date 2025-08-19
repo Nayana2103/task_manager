@@ -133,17 +133,47 @@ const TaskTable = () => {
 
         <div className="table-wrapper">
           <table className="task-table">
-            <thead>
-              <tr>
-                <th>Action</th>
-                <th>Task Id <FaSort /></th>
-                <th>Priority <FaSort /></th>
-                <th>Created By <FaSort /></th>
-                <th>Type <FaSort /></th>
-                <th>Sub Type <FaSort /></th>
-                <th>Task Name <FaSort /></th>
-              </tr>
-            </thead>
+           <thead>
+    <tr>
+      <th>Action</th>
+      <th>
+        <div className="th-content">
+          <span>Task Id</span>
+          <FaSort className="sort-icon" />
+        </div>
+      </th>
+      <th>
+        <div className="th-content">
+          <span>Priority</span>
+          <FaSort className="sort-icon" />
+        </div>
+      </th>
+      <th>
+        <div className="th-content">
+          <span>Created By</span>
+          <FaSort className="sort-icon" />
+        </div>
+      </th>
+      <th>
+        <div className="th-content">
+          <span>Type</span>
+          <FaSort className="sort-icon" />
+        </div>
+      </th>
+      <th>
+        <div className="th-content">
+          <span>Sub Type</span>
+          <FaSort className="sort-icon" />
+        </div>
+      </th>
+      <th>
+        <div className="th-content">
+          <span>Task Name</span>
+          <FaSort className="sort-icon" />
+        </div>
+      </th>
+    </tr>
+  </thead>
             <tbody>
               {currentTasks.length > 0 ? (
                 currentTasks.map((task, idx) => (
