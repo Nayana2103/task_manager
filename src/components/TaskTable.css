@@ -206,3 +206,23 @@
   font-size: 12px;
   color: #555;
 }
+
+.filter-heading {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: black;
+}
+
+
+.filter-row select {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 6px;
+  font-size: 14px;
+  color: #666;              /* same text color */
+  background-color: #fff;   /* same background */
+  appearance: none;         
+  -webkit-appearance: none; 
+  -moz-appearance: none;    
+}
