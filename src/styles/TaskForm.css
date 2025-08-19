@@ -115,5 +115,9 @@ textarea::-moz-clear {
   display: none !important;
 }
 
-
+.error {
+  color: #dc2626; /* Tailwind red-600 */
+  font-size: 12px;
+  margin-top: 3px;
+}
 
