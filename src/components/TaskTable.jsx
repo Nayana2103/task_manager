@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import "./TaskTable.css";
 import { FaSort, FaCalendarAlt } from "react-icons/fa";
 import { Modal, Button } from "antd";
-import TaskForm from "./TaskForm"; // ✅ Make sure TaskForm exists
+import { useForm } from "react-hook-form";
+import "../styles/TaskForm.css";
 
 const TaskTable = () => {
   const [activeTab, setActiveTab] = useState("Open");
@@ -16,6 +17,14 @@ const TaskTable = () => {
 
   const [loadedTabs, setLoadedTabs] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [priority, setPriority] = useState("Medium");
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm();
 
   const tabs = [
     { name: "Open" },
@@ -24,7 +33,6 @@ const TaskTable = () => {
     { name: "Completed" },
   ];
 
-  // ✅ Fetch tasks when tab changes
   useEffect(() => {
     const fetchTasks = async () => {
       try {
@@ -49,7 +57,6 @@ const TaskTable = () => {
     fetchTasks();
   }, [activeTab, loadedTabs, search, selectedColumn]);
 
-  
   const currentTasks =
     activeTab === "Open"
       ? openTasks
@@ -58,6 +65,25 @@ const TaskTable = () => {
       : activeTab === "In Progress"
       ? inProgressTasks
       : completedTasks;
+
+  const onSubmit = (data) => {
+    console.log("✅ Form Submitted:", data);
+    reset();
+    setIsModalOpen(false);
+  };
+
+  const getPriorityClass = () => {
+    switch (priority) {
+      case "Low":
+        return "text-green-600";
+      case "Medium":
+        return "text-orange-500";
+      case "High":
+        return "text-red-600";
+      default:
+        return "";
+    }
+  };
 
   return (
     <div className="task-container">
@@ -71,13 +97,12 @@ const TaskTable = () => {
           </p>
         </div>
 
-        {/* ✅ Open Modal instead of navigate */}
         <Button type="primary" onClick={() => setIsModalOpen(true)}>
           + Create
         </Button>
       </div>
 
-      {/* ===== Task Form Modal ===== */}
+      {/* ===== Task Form Modal (Form Inside) ===== */}
       <Modal
         title="Create Task"
         open={isModalOpen}
@@ -89,7 +114,150 @@ const TaskTable = () => {
         transitionName=""
         maskTransitionName=""
       >
-        <TaskForm onClose={() => setIsModalOpen(false)} />
+        <div className="task-form">
+          <form onSubmit={handleSubmit(onSubmit)}>
+            {/* ---------------- Guest Details ---------------- */}
+            <h3 className="section-title">Guest Details</h3>
+            <div className="form-grid">
+              <div className="form-group half">
+                <label>Name</label>
+                <input
+                  type="text"
+                  placeholder="Enter Name"
+                  {...register("name", { required: "Name is required" })}
+                />
+                {errors.name && <p className="error">{errors.name.message}</p>}
+              </div>
+
+              <div className="form-group half">
+                <label>Email</label>
+                <input
+                  type="email"
+                  placeholder="Enter Email"
+                  {...register("email", {
+                    required: "Email is required",
+                    pattern: {
+                      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                      message: "Invalid email format",
+                    },
+                  })}
+                />
+                {errors.email && <p className="error">{errors.email.message}</p>}
+              </div>
+
+              <div className="form-group half">
+                <label>Created By</label>
+                <input type="text" value="Mohamed Rifthy" disabled />
+              </div>
+
+              <div className="form-group half">
+                <label>Assigned To</label>
+                <select
+                  {...register("assignedTo", { required: "Please select an agent" })}
+                >
+                  <option value="">Select Agent</option>
+                  <option value="Agent A">Agent A</option>
+                  <option value="Agent B">Agent B</option>
+                </select>
+                {errors.assignedTo && <p className="error">{errors.assignedTo.message}</p>}
+              </div>
+            </div>
+
+            <hr className="form-divider" />
+
+            {/* ---------------- Task Details ---------------- */}
+            <h3 className="section-title">Task Details</h3>
+            <div className="form-grid">
+              <div className="form-group full">
+                <label>Task Name</label>
+                <input
+                  type="text"
+                  placeholder="Enter Task Name"
+                  {...register("taskName", { required: "Task name is required" })}
+                />
+                {errors.taskName && <p className="error">{errors.taskName.message}</p>}
+              </div>
+
+              <div className="form-group full">
+                <label>Task Type</label>
+                <select {...register("taskType", { required: "Task type is required" })}>
+                  <option value="">Select Type</option>
+                  <option value="Bug">Bug</option>
+                  <option value="Feature">Feature</option>
+                  <option value="Improvement">Improvement</option>
+                </select>
+                {errors.taskType && <p className="error">{errors.taskType.message}</p>}
+              </div>
+
+              <div className="form-group full">
+                <label>Task Details</label>
+                <textarea
+                  placeholder="Enter Details"
+                  {...register("details", { required: "Task details are required" })}
+                ></textarea>
+                {errors.details && <p className="error">{errors.details.message}</p>}
+              </div>
+
+              <div className="form-group half">
+                <label>Priority</label>
+                <select
+                  value={priority}
+                  onChange={(e) => setPriority(e.target.value)}
+                  {...register("priority", { required: "Priority is required" })}
+                  className={`${getPriorityClass()} font-semibold`}
+                >
+                  <option value="Low" className="text-green-600">Low</option>
+                  <option value="Medium" className="text-orange-500">Medium</option>
+                  <option value="High" className="text-red-600">High</option>
+                </select>
+                {errors.priority && <p className="error">{errors.priority.message}</p>}
+              </div>
+
+              <div className="form-group half">
+                <label>Status</label>
+                <select defaultValue="Open" {...register("status")}>
+                  <option>Open</option>
+                  <option>In Progress</option>
+                  <option>Completed</option>
+                </select>
+              </div>
+
+              <div className="form-group full">
+                <label>Engagement</label>
+                <input type="text" placeholder="Enter Engagement" {...register("engagement")} />
+              </div>
+
+              <div className="form-group half">
+                <label>Start Date</label>
+                <input type="date" {...register("startDate")} />
+              </div>
+              <div className="form-group half">
+                <label>End Date</label>
+                <input type="date" {...register("endDate")} />
+              </div>
+
+              <div className="form-group full">
+                <label>Remarks</label>
+                <textarea placeholder="Enter Remarks" {...register("remarks")}></textarea>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="form-actions">
+              <button type="submit" className="btn-primary">Save</button>
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={() => {
+                  reset();
+                  setIsModalOpen(false);
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
       </Modal>
 
       {/* ===== Second White Box ===== */}
@@ -148,7 +316,7 @@ const TaskTable = () => {
               className={`tab ${activeTab === tab.name ? "active" : ""}`}
               onClick={() => {
                 setActiveTab(tab.name);
-                setLoadedTabs((prev) => ({ ...prev, [tab.name]: false })); // ✅ reload on tab switch
+                setLoadedTabs((prev) => ({ ...prev, [tab.name]: false }));
               }}
             >
               {tab.name}
@@ -162,33 +330,19 @@ const TaskTable = () => {
             <thead>
               <tr>
                 <th>Action</th>
-                <th className="sortable">
-                  Task Id <FaSort />
-                </th>
-                <th className="sortable">
-                  Priority <FaSort />
-                </th>
-                <th className="sortable">
-                  Created By <FaSort />
-                </th>
-                <th className="sortable">
-                  Type <FaSort />
-                </th>
-                <th className="sortable">
-                  Sub Type <FaSort />
-                </th>
-                <th className="sortable">
-                  Task Name <FaSort />
-                </th>
+                <th>Task Id <FaSort /></th>
+                <th>Priority <FaSort /></th>
+                <th>Created By <FaSort /></th>
+                <th>Type <FaSort /></th>
+                <th>Sub Type <FaSort /></th>
+                <th>Task Name <FaSort /></th>
               </tr>
             </thead>
             <tbody>
               {currentTasks.length > 0 ? (
                 currentTasks.map((task, idx) => (
                   <tr key={idx}>
-                    <td>
-                      <button>⋮</button>
-                    </td>
+                    <td><button>⋮</button></td>
                     <td>{task.id}</td>
                     <td>{task.priority}</td>
                     <td>{task.createdBy}</td>

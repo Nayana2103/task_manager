@@ -1,17 +1,3 @@
-/* ===== Modal Container ===== */
-.task-form-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: rgba(0, 0, 0, 0.4); /* dimmed backdrop */
-  z-index: 1000;
-}
-
 /* ===== Divider ===== */
 .form-divider {
   border: 0;
@@ -19,29 +5,20 @@
   margin: 20px 0;
 }
 
-/* ===== Modal-like Form ===== */
+/* ===== Form Wrapper (inside AntD Modal) ===== */
 .task-form {
-  position: relative;
-  width: 60vw;
-  max-height: 90vh;
-  background: #fff;
+  width: 100%;
+  max-height: 70vh;
   padding: 16px;
-  border-radius: 10px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-  overflow-y: auto;
   box-sizing: border-box;
+  overflow-y: auto;
   scroll-behavior: smooth;
-
-  /* Hide scrollbars */
-  scrollbar-width: none; 
-  -ms-overflow-style: none;
 }
+
+/* Hide scrollbars */
 .task-form::-webkit-scrollbar {
   display: none;
 }
-
-/* ===== Close Button ===== */
-
 
 /* ===== Title ===== */
 .form-title {
@@ -127,37 +104,16 @@ input:disabled {
 }
 
 /* ===== Remove ❌ clear icons ===== */
-
-/* Chrome/Edge (input, textarea) */
 input::-webkit-clear-button,
-
 textarea::-webkit-clear-button {
   -webkit-appearance: none !important;
   appearance: none !important;
   display: none !important;
 }
-
-/* Firefox */
 input[type="text"]::-moz-clear,
 textarea::-moz-clear {
   display: none !important;
 }
-/* Keep this for Ant Design modal */
-/* Make sure close button sits at the real corner of the white box */
 
-/* ===== Custom Close Button (for your task-form) ===== */
-.task-form .close-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: transparent;
-  border: none;
-  font-size: 12px;
-  color: #666;
-  cursor: pointer;
-  transition: color 0.2s ease;
-}
 
-.task-form .close-btn:hover {
-  color: #ff4d4f; /* red hover */
-}
+
