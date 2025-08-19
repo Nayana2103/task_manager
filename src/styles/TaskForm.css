@@ -103,7 +103,7 @@ input:disabled {
   font-size: 12px;
 }
 
-/* ===== Remove ❌ clear icons ===== */
+/* ===== Remove clear icons ===== */
 input::-webkit-clear-button,
 textarea::-webkit-clear-button {
   -webkit-appearance: none !important;
@@ -114,6 +114,13 @@ input[type="text"]::-moz-clear,
 textarea::-moz-clear {
   display: none !important;
 }
+
+.error {
+  color: #dc2626; /* Tailwind red-600 */
+  font-size: 12px;
+  margin-top: 3px;
+}
+
 
 
 

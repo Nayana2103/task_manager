@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { Modal, Button } from "antd";
+import { Modal, Button, message  } from "antd";
 import { useForm } from "react-hook-form";
 import "../styles/TaskForm.css";
 
 const TaskModal = ({ isOpen, onClose }) => {
   const [priority, setPriority] = useState("Medium");
+    const [messageApi, contextHolder] = message.useMessage(); 
 
   const {
     register,
@@ -27,12 +28,15 @@ const TaskModal = ({ isOpen, onClose }) => {
   };
 
   const onSubmit = (data) => {
-    console.log("✅ Form Submitted:", data);
+    console.log("Form Submitted:", data);
+     messageApi.success("Task created successfully ");
     reset();
     onClose();
   };
 
   return (
+     <>
+      {contextHolder} 
     <Modal
       title="Create Task"
       open={isOpen}
@@ -178,6 +182,7 @@ const TaskModal = ({ isOpen, onClose }) => {
         </form>
       </div>
     </Modal>
+    </>
   );
 };
 

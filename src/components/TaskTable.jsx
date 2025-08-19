@@ -11,7 +11,6 @@ const TaskTable = () => {
   const [pendingTasks, setPendingTasks] = useState([]);
   const [inProgressTasks, setInProgressTasks] = useState([]);
   const [completedTasks, setCompletedTasks] = useState([]);
-  const [loadedTabs, setLoadedTabs] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const tabs = [
@@ -21,29 +20,32 @@ const TaskTable = () => {
     { name: "Completed" },
   ];
 
-  useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        if (loadedTabs[activeTab]) return;
-
-        let response = await fetch(
-          `/api/tasks?status=${activeTab}&column=${selectedColumn}&search=${search}`
-        );
-        let data = await response.json();
-
-        if (activeTab === "Open") setOpenTasks(data);
-        else if (activeTab === "Pending") setPendingTasks(data);
-        else if (activeTab === "In Progress") setInProgressTasks(data);
-        else if (activeTab === "Completed") setCompletedTasks(data);
-
-        setLoadedTabs((prev) => ({ ...prev, [activeTab]: true }));
-      } catch (error) {
-        console.error("Error fetching tasks:", error);
-      }
-    };
-
-    fetchTasks();
-  }, [activeTab, loadedTabs, search, selectedColumn]);
+  
+  const dummyData = {
+    Open: [
+      { id: "T001", priority: "High", createdBy: "Alice", type: "Bug", subType: "UI", name: "Fix navbar issue" },
+      { id: "T002", priority: "Low", createdBy: "Bob", type: "Task", subType: "Docs", name: "Update README" },
+    ],
+    Pending: [
+      { id: "T010", priority: "Medium", createdBy: "Charlie", type: "Feature", subType: "API", name: "Add login API" },
+    ],
+    "In Progress": [
+      { id: "T020", priority: "High", createdBy: "David", type: "Bug", subType: "Backend", name: "Fix DB crash" },
+      { id: "T021", priority: "Medium", createdBy: "Eve", type: "Task", subType: "Testing", name: "Write unit tests" },
+      { id: "T022", priority: "Low", createdBy: "Frank", type: "Feature", subType: "Frontend", name: "Add search bar" },
+    ],
+    Completed: [
+      { id: "T030", priority: "Low", createdBy: "Grace", type: "Task", subType: "Docs", name: "Code cleanup" },
+    ],
+  };
+ useEffect(() => {
+    setOpenTasks(dummyData.Open);
+    setPendingTasks(dummyData.Pending);
+    setInProgressTasks(dummyData["In Progress"]);
+    setCompletedTasks(dummyData.Completed);
+  }, []);
+ 
+ 
 
   const currentTasks =
     activeTab === "Open"
@@ -53,6 +55,32 @@ const TaskTable = () => {
       : activeTab === "In Progress"
       ? inProgressTasks
       : completedTasks;
+
+  // Export to CSV
+  const exportToCSV = () => {
+    if (!currentTasks.length) return;
+
+    const headers = ["Task Id", "Priority", "Created By", "Type", "Sub Type", "Task Name"];
+    const rows = currentTasks.map((task) => [
+      task.id,
+      task.priority,
+      task.createdBy,
+      task.type,
+      task.subType,
+      task.name,
+    ]);
+
+    let csvContent =
+      "data:text/csv;charset=utf-8," +
+      [headers, ...rows].map((e) => e.join(",")).join("\n");
+
+    const link = document.createElement("a");
+    link.href = encodeURI(csvContent);
+    link.download = `${activeTab}_Tasks.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   return (
     <div className="task-container">
@@ -96,9 +124,7 @@ const TaskTable = () => {
             />
             <button
               className="filter-btn"
-              onClick={() =>
-                setLoadedTabs((prev) => ({ ...prev, [activeTab]: false }))
-              }
+             
             >
               Filter
             </button>
@@ -106,29 +132,40 @@ const TaskTable = () => {
           <div className="side-buttons">
             <button
               className="footer-btn"
-              onClick={() =>
-                setLoadedTabs((prev) => ({ ...prev, [activeTab]: false }))
-              }
+              
             >
               ⟳ Refresh
             </button>
-            <button className="footer-btn">Export to CSV</button>
+            <button className="footer-btn" onClick={exportToCSV}>
+              Export to CSV
+            </button>
           </div>
         </div>
 
         <div className="tabs">
-          {tabs.map((tab) => (
-            <button
-              key={tab.name}
-              className={`tab ${activeTab === tab.name ? "active" : ""}`}
-              onClick={() => {
-                setActiveTab(tab.name);
-                setLoadedTabs((prev) => ({ ...prev, [tab.name]: false }));
-              }}
-            >
-              {tab.name}
-            </button>
-          ))}
+          {tabs.map((tab) => {
+            const count =
+              tab.name === "Open"
+                ? openTasks.length
+                : tab.name === "Pending"
+                ? pendingTasks.length
+                : tab.name === "In Progress"
+                ? inProgressTasks.length
+                : completedTasks.length;
+
+            return (
+              <button
+                key={tab.name}
+                className={`tab ${activeTab === tab.name ? "active" : ""}`}
+                onClick={() => {
+                  setActiveTab(tab.name);
+ 
+                }}
+              >
+                {tab.name} ({count})
+              </button>
+            );
+          })}
         </div>
 
         <div className="table-wrapper">
@@ -136,19 +173,51 @@ const TaskTable = () => {
             <thead>
               <tr>
                 <th>Action</th>
-                <th>Task Id <FaSort /></th>
-                <th>Priority <FaSort /></th>
-                <th>Created By <FaSort /></th>
-                <th>Type <FaSort /></th>
-                <th>Sub Type <FaSort /></th>
-                <th>Task Name <FaSort /></th>
+                <th>
+                  <div className="th-content">
+                    <span>Task Id</span>
+                    <FaSort className="sort-icon" />
+                  </div>
+                </th>
+                <th>
+                  <div className="th-content">
+                    <span>Priority</span>
+                    <FaSort className="sort-icon" />
+                  </div>
+                </th>
+                <th>
+                  <div className="th-content">
+                    <span>Created By</span>
+                    <FaSort className="sort-icon" />
+                  </div>
+                </th>
+                <th>
+                  <div className="th-content">
+                    <span>Type</span>
+                    <FaSort className="sort-icon" />
+                  </div>
+                </th>
+                <th>
+                  <div className="th-content">
+                    <span>Sub Type</span>
+                    <FaSort className="sort-icon" />
+                  </div>
+                </th>
+                <th>
+                  <div className="th-content">
+                    <span>Task Name</span>
+                    <FaSort className="sort-icon" />
+                  </div>
+                </th>
               </tr>
             </thead>
             <tbody>
               {currentTasks.length > 0 ? (
                 currentTasks.map((task, idx) => (
                   <tr key={idx}>
-                    <td><button>⋮</button></td>
+                    <td>
+                      <button>⋮</button>
+                    </td>
                     <td>{task.id}</td>
                     <td>{task.priority}</td>
                     <td>{task.createdBy}</td>
