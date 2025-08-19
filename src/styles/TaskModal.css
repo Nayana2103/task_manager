@@ -1,12 +1,17 @@
+/* ===== Scoped Wrapper ===== */
+.TaskModal {
+  font-family: inherit;
+}
+
 /* ===== Divider ===== */
-.form-divider {
+.TaskModal .form-divider {
   border: 0;
   border-top: 1px solid #e5e7eb;
   margin: 20px 0;
 }
 
-/* ===== Form Wrapper (inside AntD Modal) ===== */
-.task-form {
+/* ===== Form Wrapper ===== */
+.TaskModal .task-form {
   width: 100%;
   max-height: 70vh;
   padding: 16px;
@@ -15,13 +20,12 @@
   scroll-behavior: smooth;
 }
 
-/* Hide scrollbars */
-.task-form::-webkit-scrollbar {
+.TaskModal .task-form::-webkit-scrollbar {
   display: none;
 }
 
 /* ===== Title ===== */
-.form-title {
+.TaskModal .form-title {
   font-size: 16px;
   font-weight: 600;
   margin-bottom: 12px;
@@ -29,30 +33,30 @@
 }
 
 /* ===== Grid ===== */
-.form-grid {
+.TaskModal .form-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 10px;
 }
 
-.form-group {
+.TaskModal .form-group {
   display: flex;
   flex-direction: column;
 }
-.form-group.full {
+.TaskModal .form-group.full {
   grid-column: span 2;
 }
 
-label {
+.TaskModal label {
   font-size: 12px;
   margin-bottom: 3px;
   color: #555;
 }
 
 /* ===== Inputs ===== */
-input,
-select,
-textarea {
+.TaskModal input,
+.TaskModal select,
+.TaskModal textarea {
   padding: 5px 7px;
   border: 1px solid #ddd;
   border-radius: 4px;
@@ -60,25 +64,25 @@ textarea {
   font-family: inherit;
 }
 
-textarea {
+.TaskModal textarea {
   min-height: 50px;
   resize: vertical;
 }
 
-input:disabled {
+.TaskModal input:disabled {
   background: #f5f5f5;
   color: #888;
 }
 
 /* ===== Actions ===== */
-.form-actions {
+.TaskModal .form-actions {
   margin-top: 14px;
   display: flex;
   gap: 8px;
   justify-content: flex-end;
 }
 
-.btn-primary {
+.TaskModal .btn-primary {
   background: #2563eb;
   color: white;
   padding: 6px 12px;
@@ -89,11 +93,11 @@ input:disabled {
   font-size: 12px;
   transition: background 0.2s ease;
 }
-.btn-primary:hover {
+.TaskModal .btn-primary:hover {
   background: #1d4ed8;
 }
 
-.btn-secondary {
+.TaskModal .btn-secondary {
   background: #e5e7eb;
   color: #111;
   padding: 6px 12px;
@@ -104,23 +108,19 @@ input:disabled {
 }
 
 /* ===== Remove clear icons ===== */
-input::-webkit-clear-button,
-textarea::-webkit-clear-button {
+.TaskModal input::-webkit-clear-button,
+.TaskModal textarea::-webkit-clear-button {
   -webkit-appearance: none !important;
   appearance: none !important;
   display: none !important;
 }
-input[type="text"]::-moz-clear,
-textarea::-moz-clear {
+.TaskModal input[type="text"]::-moz-clear,
+.TaskModal textarea::-moz-clear {
   display: none !important;
 }
 
-.error {
-  color: #dc2626; /* Tailwind red-600 */
+.TaskModal .error {
+  color: #dc2626;
   font-size: 12px;
   margin-top: 3px;
 }
-
-
-
-

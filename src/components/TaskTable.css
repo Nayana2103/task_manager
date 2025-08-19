@@ -1,24 +1,24 @@
-.task-container {
+.task-table .task-container {
   display: flex;
   flex-direction: column;
   gap: 16px;
   padding: 20px;
 }
 
-.task-desc {
+.task-table .task-desc {
   display: flex;
-  align-items: center; 
-  gap: 4px;            
-  font-size: 16px;     
-  color: #333;          
+  align-items: center;
+  gap: 4px;
+  font-size: 16px;
+  color: #333;
 }
 
-.task-desc .calendar-icon {
-  font-size: 12px;      
-  color: #2091c6;      
+.task-table .task-desc .calendar-icon {
+  font-size: 12px;
+  color: #2091c6;
 }
 
-.task-header-box {
+.task-table .task-header-box {
   background: #fff;
   border: 1px solid #ddd;
   padding: 16px;
@@ -28,19 +28,19 @@
   align-items: center;
 }
 
-.task-header-box h2 {
+.task-table .task-header-box h2 {
   font-size: 18px;
   font-weight: 600;
   margin: 0;
 }
 
-.task-header-box p {
+.task-table .task-header-box p {
   font-size: 13px;
   color: #666;
   margin: 4px 0 0 0;
 }
 
-.create-btn {
+.task-table .create-btn {
   background: #2091c6;
   color: white;
   border: none;
@@ -49,12 +49,12 @@
   cursor: pointer;
   font-size: 14px;
 }
-.create-btn:hover {
+.task-table .create-btn:hover {
   background: #2091c6;
 }
 
 /* Second white box */
-.task-body-box {
+.task-table .task-body-box {
   background: #fff;
   border: 1px solid #ddd;
   padding: 16px;
@@ -62,26 +62,26 @@
 }
 
 /* Filter row */
-.filter-row-wrapper {
+.task-table .filter-row-wrapper {
   display: flex;
-  justify-content: space-between; 
-  align-items: center;           
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 10px;
 }
-.filter-row {
+.task-table .filter-row {
   display: flex;
-  gap: 8px; 
+  gap: 8px;
 }
 
-.filter-row select,
-.filter-row input {
+.task-table .filter-row select,
+.task-table .filter-row input {
   border: 1px solid #ddd;
   border-radius: 4px;
   padding: 6px;
   font-size: 14px;
 }
 
-.filter-btn {
+.task-table .filter-btn {
   background: #f3f3f3;
   border: 1px solid #ccc;
   padding: 6px 12px;
@@ -90,14 +90,14 @@
 }
 
 /* Tabs */
-.tabs {
+.task-table .tabs {
   display: flex;
   gap: 20px;
   border-bottom: 1px solid #ddd;
   margin-bottom: 10px;
 }
 
-.tab {
+.task-table .tab {
   background: none;
   border: none;
   padding: 8px 4px;
@@ -107,13 +107,13 @@
   color: #555;
 }
 
-.tab.active {
+.task-table .tab.active {
   color: #2091c6;
   border-bottom: 2px solid #2091c6;
   font-weight: bold;
 }
 
-.count {
+.task-table .count {
   background: #e5e7eb;
   border-radius: 12px;
   padding: 2px 6px;
@@ -122,12 +122,12 @@
 }
 
 /* Table */
-.table-wrapper {
+.task-table .table-wrapper {
   overflow-x: auto;
   margin-top: 10px;
 }
 
-.task-table {
+.task-table table {
   width: 100%;
   border-collapse: collapse;
 }
@@ -145,39 +145,34 @@
   font-weight: 600;
 }
 
-.task-table th.sortable {
-  position: relative;          
-  text-align: left;           
-  padding-right: 24px;        
-}
-
-.th-content {
+.task-table .th-content {
   display: flex;
   align-items: center;
-  justify-content: space-between; /* pushes text to left, icon to right */
-  width: 100%; /* makes it stretch full th cell */
+  justify-content: space-between;
+  width: 100%;
 }
 
-.sort-icon {
+.task-table .sort-icon {
   font-size: 14px;
   cursor: pointer;
 }
-.no-records {
+
+.task-table .no-records {
   text-align: center;
   color: #555;
   padding: 20px;
 }
 
 /* Footer */
-.table-footer {
+.task-table .table-footer {
   margin-top: 10px;
   display: flex;
-  justify-content: flex-end; 
+  justify-content: flex-end;
   font-size: 13px;
   color: #666;
 }
 
-.footer-btn {
+.task-table .footer-btn {
   margin-left: 10px;
   border: 1px solid #2091c6;
   background: #f8f9fa;
@@ -185,31 +180,19 @@
   border-radius: 4px;
   cursor: pointer;
 }
-.footer-btn:hover {
+.task-table .footer-btn:hover {
   background: #e2e6ea;
 }
 
-.side-buttons {
+.task-table .side-buttons {
   margin-left: auto;
   display: flex;
   gap: 8px;
-  color:#2091c6;
+  color: #2091c6;
   font-size: 12px;
 }
 
-.header-cell {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-}
-
-.header-cell svg {
-  font-size: 12px;
-  color: #555;
-}
-
-.filter-heading {
+.task-table .filter-heading {
   font-size: 16px;
   font-weight: 600;
   margin-bottom: 10px;
@@ -217,33 +200,29 @@
 }
 
 
-.filter-row select {
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 6px;
-  font-size: 14px;
-  color: #666;              /* same text color */
-  background-color: #fff;   /* same background */
-  appearance: none;         
-  -webkit-appearance: none; 
-  -moz-appearance: none;    
+
+/* Buttons */
+.task-table .btn-primary { 
+  background: #2563eb; 
+  color: white; 
+  padding: 6px 12px; 
+  border: none; 
+  border-radius: 4px; 
+  cursor: pointer; 
+  font-weight: 500; 
+  font-size: 12px; 
+  transition: background 0.2s ease; 
+}
+.task-table .btn-primary:hover { 
+  background: #1d4ed8; 
 }
 
-/* Fix Ant Design modal close button position */
-.ant-modal-close {
-  position: absolute !important;
-  top: 16px !important;
-  right: 16px !important;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #333;
-  font-size: 18px;
-}
-
-.ant-modal-close:hover {
-  color: #ff4d4f; /* red hover */
-}
-
-
+.task-table .btn-secondary { 
+  background: #e5e7eb; 
+  color: #111; 
+  padding: 6px 12px; 
+  border: none; 
+  border-radius: 4px; 
+  cursor: pointer; 
+  font-size: 12px; 
+}  
