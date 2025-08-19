@@ -29,7 +29,7 @@ const TaskModal = ({ isOpen, onClose }) => {
 
   const onSubmit = (data) => {
     console.log("✅ Form Submitted:", data);
-     messageApi.success("Task created successfully 🎉");
+     messageApi.success("Task created successfully ");
     reset();
     onClose();
   };
@@ -40,7 +40,10 @@ const TaskModal = ({ isOpen, onClose }) => {
     <Modal
       title="Create Task"
       open={isOpen}
-      onCancel={onClose}
+       onCancel={() => {
+    reset();      // Clear all fields
+    onClose();    // Close modal
+  }}
       footer={null}
       width={600}
       centered
@@ -49,7 +52,8 @@ const TaskModal = ({ isOpen, onClose }) => {
       maskTransitionName=""
     >
       <div className="task-form">
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit)} noValidate>
+
           <h3 className="section-title">Guest Details</h3>
           <div className="form-grid">
             <div className="form-group half">
