@@ -7,25 +7,10 @@ const TaskTable = () => {
   const [activeTab, setActiveTab] = useState("Open");
   const [search, setSearch] = useState("");
   const [selectedColumn, setSelectedColumn] = useState("");
-
-  const [openTasks, setOpenTasks] = useState([
-    { id: "O1", priority: "High", createdBy: "Alice", type: "Bug", subType: "UI", name: "Fix login issue" },
-    { id: "O2", priority: "Medium", createdBy: "Bob", type: "Feature", subType: "Dashboard", name: "Add analytics tab" },
-  ]);
-
-  const [pendingTasks, setPendingTasks] = useState([
-    { id: "P1", priority: "Low", createdBy: "Charlie", type: "Bug", subType: "API", name: "Check timeout error" },
-  ]);
-
-  const [inProgressTasks, setInProgressTasks] = useState([
-    { id: "IP1", priority: "High", createdBy: "Diana", type: "Feature", subType: "Auth", name: "Implement OTP login" },
-  ]);
-
-  const [completedTasks, setCompletedTasks] = useState([
-    { id: "C1", priority: "Medium", createdBy: "Eve", type: "Bug", subType: "UI", name: "Fix header alignment" },
-  ]);
-
-  const [loadedTabs, setLoadedTabs] = useState({});
+  const [openTasks, setOpenTasks] = useState([]);
+  const [pendingTasks, setPendingTasks] = useState([]);
+  const [inProgressTasks, setInProgressTasks] = useState([]);
+  const [completedTasks, setCompletedTasks] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // ✅ ADD COUNTS TO TABS
@@ -36,29 +21,32 @@ const TaskTable = () => {
     { name: "Completed", count: completedTasks.length },
   ];
 
-  const fetchTasks = async (status = activeTab) => {
-    if (loadedTabs[status]) return;
-    try {
-      const response = await fetch(
-        `/api/tasks?status=${status}&column=${selectedColumn}&search=${search}`
-      );
-      if (!response.ok) throw new Error("Failed to fetch");
-      const data = await response.json();
-
-      if (status === "Open") setOpenTasks(data);
-      else if (status === "Pending") setPendingTasks(data);
-      else if (status === "In Progress") setInProgressTasks(data);
-      else if (status === "Completed") setCompletedTasks(data);
-
-      setLoadedTabs((prev) => ({ ...prev, [status]: true }));
-    } catch (err) {
-      console.error("Error fetching tasks:", err);
-    }
+  
+  const dummyData = {
+    Open: [
+      { id: "T001", priority: "High", createdBy: "Alice", type: "Bug", subType: "UI", name: "Fix navbar issue" },
+      { id: "T002", priority: "Low", createdBy: "Bob", type: "Task", subType: "Docs", name: "Update README" },
+    ],
+    Pending: [
+      { id: "T010", priority: "Medium", createdBy: "Charlie", type: "Feature", subType: "API", name: "Add login API" },
+    ],
+    "In Progress": [
+      { id: "T020", priority: "High", createdBy: "David", type: "Bug", subType: "Backend", name: "Fix DB crash" },
+      { id: "T021", priority: "Medium", createdBy: "Eve", type: "Task", subType: "Testing", name: "Write unit tests" },
+      { id: "T022", priority: "Low", createdBy: "Frank", type: "Feature", subType: "Frontend", name: "Add search bar" },
+    ],
+    Completed: [
+      { id: "T030", priority: "Low", createdBy: "Grace", type: "Task", subType: "Docs", name: "Code cleanup" },
+    ],
   };
-
-  useEffect(() => {
-    fetchTasks(activeTab);
-  }, [activeTab, search, selectedColumn]);
+ useEffect(() => {
+    setOpenTasks(dummyData.Open);
+    setPendingTasks(dummyData.Pending);
+    setInProgressTasks(dummyData["In Progress"]);
+    setCompletedTasks(dummyData.Completed);
+  }, []);
+ 
+ 
 
   const currentTasks =
     activeTab === "Open"
@@ -69,16 +57,9 @@ const TaskTable = () => {
       ? inProgressTasks
       : completedTasks;
 
-  const handleRefresh = () => {
-    setLoadedTabs((prev) => ({ ...prev, [activeTab]: false }));
-    fetchTasks(activeTab);
-  };
-
-  const handleExportCSV = () => {
-    if (!currentTasks.length) {
-      alert("No tasks available to export.");
-      return;
-    }
+  // Export to CSV
+  const exportToCSV = () => {
+    if (!currentTasks.length) return;
 
     const headers = ["Task Id", "Priority", "Created By", "Type", "Sub Type", "Task Name"];
     const rows = currentTasks.map((task) => [
@@ -92,12 +73,11 @@ const TaskTable = () => {
 
     let csvContent =
       "data:text/csv;charset=utf-8," +
-      [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
+      [headers, ...rows].map((e) => e.join(",")).join("\n");
 
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.setAttribute("download", `${activeTab}_tasks.csv`);
+    link.href = encodeURI(csvContent);
+    link.download = `${activeTab}_Tasks.csv`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -146,18 +126,19 @@ const TaskTable = () => {
             />
             <button
               className="filter-btn"
-              onClick={() =>
-                setLoadedTabs((prev) => ({ ...prev, [activeTab]: false }))
-              }
+             
             >
               Filter
             </button>
           </div>
           <div className="side-buttons">
-            <button className="footer-btn" onClick={handleRefresh}>
+            <button
+              className="footer-btn"
+              
+            >
               ⟳ Refresh
             </button>
-            <button className="footer-btn" onClick={handleExportCSV}>
+            <button className="footer-btn" onClick={exportToCSV}>
               Export to CSV
             </button>
           </div>
@@ -165,18 +146,29 @@ const TaskTable = () => {
 
         {/* ✅ Tabs with count */}
         <div className="tabs">
-          {tabs.map((tab) => (
-            <button
-              key={tab.name}
-              className={`tab ${activeTab === tab.name ? "active" : ""}`}
-              onClick={() => {
-                setActiveTab(tab.name);
-                setLoadedTabs((prev) => ({ ...prev, [tab.name]: false }));
-              }}
-            >
-              {tab.name} ({tab.count})
-            </button>
-          ))}
+          {tabs.map((tab) => {
+            const count =
+              tab.name === "Open"
+                ? openTasks.length
+                : tab.name === "Pending"
+                ? pendingTasks.length
+                : tab.name === "In Progress"
+                ? inProgressTasks.length
+                : completedTasks.length;
+
+            return (
+              <button
+                key={tab.name}
+                className={`tab ${activeTab === tab.name ? "active" : ""}`}
+                onClick={() => {
+                  setActiveTab(tab.name);
+ 
+                }}
+              >
+                {tab.name} ({count})
+              </button>
+            );
+          })}
         </div>
 
         {/* Table */}
@@ -227,7 +219,9 @@ const TaskTable = () => {
               {currentTasks.length > 0 ? (
                 currentTasks.map((task, idx) => (
                   <tr key={idx}>
-                    <td><button>⋮</button></td>
+                    <td>
+                      <button>⋮</button>
+                    </td>
                     <td>{task.id}</td>
                     <td>{task.priority}</td>
                     <td>{task.createdBy}</td>
