@@ -24,13 +24,15 @@ const TaskTable = () => {
     { name: "Completed" },
   ];
 
-  // Fetch tasks when tab changes
+  // ✅ Fetch tasks when tab changes
   useEffect(() => {
     const fetchTasks = async () => {
       try {
         if (loadedTabs[activeTab]) return;
 
-        let response = await fetch(`/api/tasks?status=${activeTab}`);
+        let response = await fetch(
+          `/api/tasks?status=${activeTab}&column=${selectedColumn}&search=${search}`
+        );
         let data = await response.json();
 
         if (activeTab === "Open") setOpenTasks(data);
@@ -45,8 +47,9 @@ const TaskTable = () => {
     };
 
     fetchTasks();
-  }, [activeTab, loadedTabs]);
+  }, [activeTab, loadedTabs, search, selectedColumn]);
 
+  
   const currentTasks =
     activeTab === "Open"
       ? openTasks
@@ -55,21 +58,6 @@ const TaskTable = () => {
       : activeTab === "In Progress"
       ? inProgressTasks
       : completedTasks;
-
-  const filteredTasks = currentTasks.filter((task) => {
-    if (search.trim() === "") return true;
-
-    if (selectedColumn === "all") {
-      return Object.values(task)
-        .join(" ")
-        .toLowerCase()
-        .includes(search.toLowerCase());
-    } else if (selectedColumn) {
-      const value = String(task[selectedColumn])?.toLowerCase();
-      return value.includes(search.toLowerCase());
-    }
-    return true;
-  });
 
   return (
     <div className="task-container">
@@ -90,23 +78,19 @@ const TaskTable = () => {
       </div>
 
       {/* ===== Task Form Modal ===== */}
-<Modal
-  title="Create Task"
-  open={isModalOpen}
-  onCancel={() => setIsModalOpen(false)}
-  footer={null}
-  width={600}
-  centered
-  closable={true}
-  transitionName=""
-  maskTransitionName=""
- 
- 
->
-  <TaskForm onClose={() => setIsModalOpen(false)} />
-</Modal>
-
-
+      <Modal
+        title="Create Task"
+        open={isModalOpen}
+        onCancel={() => setIsModalOpen(false)}
+        footer={null}
+        width={600}
+        centered
+        closable={true}
+        transitionName=""
+        maskTransitionName=""
+      >
+        <TaskForm onClose={() => setIsModalOpen(false)} />
+      </Modal>
 
       {/* ===== Second White Box ===== */}
       <div className="task-body-box">
@@ -135,20 +119,9 @@ const TaskTable = () => {
             />
             <button
               className="filter-btn"
-              onClick={() => {
-                fetch(
-                  `/api/tasks?status=${activeTab}&column=${selectedColumn}&search=${search}`
-                )
-                  .then((res) => res.json())
-                  .then((data) => {
-                    if (activeTab === "Open") setOpenTasks(data);
-                    else if (activeTab === "Pending") setPendingTasks(data);
-                    else if (activeTab === "In Progress")
-                      setInProgressTasks(data);
-                    else if (activeTab === "Completed")
-                      setCompletedTasks(data);
-                  });
-              }}
+              onClick={() =>
+                setLoadedTabs((prev) => ({ ...prev, [activeTab]: false }))
+              }
             >
               Filter
             </button>
@@ -173,7 +146,10 @@ const TaskTable = () => {
             <button
               key={tab.name}
               className={`tab ${activeTab === tab.name ? "active" : ""}`}
-              onClick={() => setActiveTab(tab.name)}
+              onClick={() => {
+                setActiveTab(tab.name);
+                setLoadedTabs((prev) => ({ ...prev, [tab.name]: false })); // ✅ reload on tab switch
+              }}
             >
               {tab.name}
             </button>
@@ -207,8 +183,8 @@ const TaskTable = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredTasks.length > 0 ? (
-                filteredTasks.map((task, idx) => (
+              {currentTasks.length > 0 ? (
+                currentTasks.map((task, idx) => (
                   <tr key={idx}>
                     <td>
                       <button>⋮</button>
@@ -234,7 +210,7 @@ const TaskTable = () => {
 
         {/* Footer */}
         <div className="table-footer">
-          <span>Total Records: {filteredTasks.length}</span>
+          <span>Total Records: {currentTasks.length}</span>
         </div>
       </div>
     </div>

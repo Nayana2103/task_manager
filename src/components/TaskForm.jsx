@@ -14,8 +14,8 @@ function TaskForm({ onClose }) {
 
   const onSubmit = (data) => {
     console.log("✅ Form Submitted:", data);
-    reset(); // Clear form after submit
-    if (onClose) onClose(); // close modal if function passed
+    reset();
+    if (onClose) onClose();
   };
 
   const getPriorityClass = () => {
@@ -44,6 +44,8 @@ function TaskForm({ onClose }) {
         <h2 className="form-title">Create Task</h2>
 
         <form onSubmit={handleSubmit(onSubmit)}>
+          {/* ---------------- Guest Details Section ---------------- */}
+          <h3 className="section-title">Guest Details</h3>
           <div className="form-grid">
             {/* Name */}
             <div className="form-group half">
@@ -72,10 +74,33 @@ function TaskForm({ onClose }) {
               />
               {errors.email && <p className="error">{errors.email.message}</p>}
             </div>
+
+            {/* Created By */}
+            <div className="form-group half">
+              <label>Created By</label>
+              <input type="text" value="Mohamed Rifthy" disabled />
+            </div>
+
+            {/* Assigned To */}
+            <div className="form-group half">
+              <label>Assigned To</label>
+              <select
+                {...register("assignedTo", { required: "Please select an agent" })}
+              >
+                <option value="">Select Agent</option>
+                <option value="Agent A">Agent A</option>
+                <option value="Agent B">Agent B</option>
+              </select>
+              {errors.assignedTo && (
+                <p className="error">{errors.assignedTo.message}</p>
+              )}
+            </div>
           </div>
 
           <hr className="form-divider" />
 
+          {/* ---------------- Task Details Section ---------------- */}
+          <h3 className="section-title">Task Details</h3>
           <div className="form-grid">
             {/* Task Name */}
             <div className="form-group full">
@@ -93,7 +118,9 @@ function TaskForm({ onClose }) {
             {/* Task Type */}
             <div className="form-group full">
               <label>Task Type</label>
-              <select {...register("taskType", { required: "Task type is required" })}>
+              <select
+                {...register("taskType", { required: "Task type is required" })}
+              >
                 <option value="">Select Type</option>
                 <option value="Bug">Bug</option>
                 <option value="Feature">Feature</option>
@@ -114,25 +141,6 @@ function TaskForm({ onClose }) {
               {errors.details && <p className="error">{errors.details.message}</p>}
             </div>
 
-            {/* Created By */}
-            <div className="form-group half">
-              <label>Created By</label>
-              <input type="text" value="Mohamed Rifthy" disabled />
-            </div>
-
-            {/* Assigned To */}
-            <div className="form-group half">
-              <label>Assigned To</label>
-              <select {...register("assignedTo", { required: "Please select an agent" })}>
-                <option value="">Select Agent</option>
-                <option value="Agent A">Agent A</option>
-                <option value="Agent B">Agent B</option>
-              </select>
-              {errors.assignedTo && (
-                <p className="error">{errors.assignedTo.message}</p>
-              )}
-            </div>
-
             {/* Priority */}
             <div className="form-group half">
               <label>Priority</label>
@@ -142,15 +150,9 @@ function TaskForm({ onClose }) {
                 {...register("priority", { required: "Priority is required" })}
                 className={`${getPriorityClass()} font-semibold`}
               >
-                <option value="Low" className="text-green-600">
-                  Low
-                </option>
-                <option value="Medium" className="text-orange-500">
-                  Medium
-                </option>
-                <option value="High" className="text-red-600">
-                  High
-                </option>
+                <option value="Low" className="text-green-600">Low</option>
+                <option value="Medium" className="text-orange-500">Medium</option>
+                <option value="High" className="text-red-600">High</option>
               </select>
               {errors.priority && <p className="error">{errors.priority.message}</p>}
             </div>
@@ -188,18 +190,13 @@ function TaskForm({ onClose }) {
             {/* Remarks */}
             <div className="form-group full">
               <label>Remarks</label>
-              <textarea
-                placeholder="Enter Remarks"
-                {...register("remarks")}
-              ></textarea>
+              <textarea placeholder="Enter Remarks" {...register("remarks")}></textarea>
             </div>
           </div>
 
-          {/* Actions */}
+          {/* ---------------- Actions ---------------- */}
           <div className="form-actions">
-            <button type="submit" className="btn-primary">
-              Save
-            </button>
+            <button type="submit" className="btn-primary">Save</button>
             <button
               type="button"
               className="btn-secondary"
