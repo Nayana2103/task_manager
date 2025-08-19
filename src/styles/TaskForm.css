@@ -167,3 +167,8 @@ textarea::-moz-clear {
   font-size: 0.8rem;
   margin-top: 4px;
 }
+.section-title {
+  font-weight: bold;
+  font-size: 0.88rem; /* same as Tailwind text-lg */
+  margin-bottom: 0.5rem;
+}
