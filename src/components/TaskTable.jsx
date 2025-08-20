@@ -24,80 +24,31 @@ const TaskTable = () => {
   // ✅ dummy data
   const dummyData = {
     Open: [
-      {
-        id: "T001",
-        priority: "High",
-        createdBy: "Alice",
-        type: "Bug",
-        subType: "UI",
-        name: "Fix navbar issue",
-      },
-      {
-        id: "T002",
-        priority: "Low",
-        createdBy: "Bob",
-        type: "Task",
-        subType: "Docs",
-        name: "Update README",
-      },
+      { id: "T001", priority: "High", createdBy: "Alice", type: "Bug", subType: "UI", name: "Fix navbar issue" },
+      { id: "T002", priority: "Low", createdBy: "Bob", type: "Task", subType: "Docs", name: "Update README" },
     ],
     Pending: [
-      {
-        id: "T010",
-        priority: "Medium",
-        createdBy: "Charlie",
-        type: "Feature",
-        subType: "API",
-        name: "Add login API",
-      },
+      { id: "T010", priority: "Medium", createdBy: "Charlie", type: "Feature", subType: "API", name: "Add login API" },
     ],
     "In Progress": [
-      {
-        id: "T020",
-        priority: "High",
-        createdBy: "David",
-        type: "Bug",
-        subType: "Backend",
-        name: "Fix DB crash",
-      },
-      {
-        id: "T021",
-        priority: "Medium",
-        createdBy: "Eve",
-        type: "Task",
-        subType: "Testing",
-        name: "Write unit tests",
-      },
-      {
-        id: "T022",
-        priority: "Low",
-        createdBy: "Frank",
-        type: "Feature",
-        subType: "Frontend",
-        name: "Add search bar",
-      },
+      { id: "T020", priority: "High", createdBy: "David", type: "Bug", subType: "Backend", name: "Fix DB crash" },
+      { id: "T021", priority: "Medium", createdBy: "Eve", type: "Task", subType: "Testing", name: "Write unit tests" },
+      { id: "T022", priority: "Low", createdBy: "Frank", type: "Feature", subType: "Frontend", name: "Add search bar" },
     ],
     Completed: [
-      {
-        id: "T030",
-        priority: "Low",
-        createdBy: "Grace",
-        type: "Task",
-        subType: "Docs",
-        name: "Code cleanup",
-      },
+      { id: "T030", priority: "Low", createdBy: "Grace", type: "Task", subType: "Docs", name: "Code cleanup" },
     ],
   };
 
-  // load dummy data once
+  // ✅ Load data only when active tab changes (for API integration in future)
   useEffect(() => {
-    setOpenTasks(dummyData.Open);
-    setPendingTasks(dummyData.Pending);
-    setInProgressTasks(dummyData["In Progress"]);
-    setCompletedTasks(dummyData.Completed);
-  }, []);
+    if (activeTab === "Open") setOpenTasks(dummyData.Open);
+    if (activeTab === "Pending") setPendingTasks(dummyData.Pending);
+    if (activeTab === "In Progress") setInProgressTasks(dummyData["In Progress"]);
+    if (activeTab === "Completed") setCompletedTasks(dummyData.Completed);
+  }, [activeTab]);
 
-  //  pick tasks for active tab
+  // ✅ pick tasks for active tab
   const currentTasks =
     activeTab === "Open"
       ? openTasks
@@ -107,18 +58,19 @@ const TaskTable = () => {
       ? inProgressTasks
       : completedTasks;
 
-  //  export CSV
+  // ✅ Handle new task creation
+  const handleTaskCreate = (newTask) => {
+    if (newTask.status === "Open") setOpenTasks((prev) => [...prev, newTask]);
+    if (newTask.status === "Pending") setPendingTasks((prev) => [...prev, newTask]);
+    if (newTask.status === "In Progress") setInProgressTasks((prev) => [...prev, newTask]);
+    if (newTask.status === "Completed") setCompletedTasks((prev) => [...prev, newTask]);
+  };
+
+  // ✅ export CSV
   const exportToCSV = () => {
     if (!currentTasks.length) return;
 
-    const headers = [
-      "Task Id",
-      "Priority",
-      "Created By",
-      "Type",
-      "Sub Type",
-      "Task Name",
-    ];
+    const headers = ["Task Id", "Priority", "Created By", "Type", "Sub Type", "Task Name"];
     const rows = currentTasks.map((task) => [
       task.id,
       task.priority,
@@ -142,16 +94,13 @@ const TaskTable = () => {
 
   return (
     <div className="task-table">
-      {" "}
-      {/*  main wrapper */}
       <div className="task-container">
         {/* Header */}
         <div className="task-header-box">
           <div>
             <h2 className="task-title">Tasks</h2>
             <p className="task-desc">
-              <FaCalendarAlt className="calendar-icon" />
-              Manage your tasks.
+              <FaCalendarAlt className="calendar-icon" /> Manage your tasks.
             </p>
           </div>
           <button className="create-btn" onClick={() => setIsModalOpen(true)}>
@@ -159,14 +108,19 @@ const TaskTable = () => {
           </button>
         </div>
 
-        <TaskModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+        {/* ✅ Pass callback to TaskModal */}
+        <TaskModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onAddTask={handleTaskCreate}
+        />
 
         {/* Body */}
         <div className="task-body-box">
           <h3 className="filter-heading">Filter:</h3>
           <div className="filter-row-wrapper">
             <div className="filter-row">
-              <select
+              {/*<select
                 value={selectedColumn}
                 onChange={(e) => setSelectedColumn(e.target.value)}
               >
@@ -178,7 +132,7 @@ const TaskTable = () => {
                 <option value="type">Type</option>
                 <option value="subType">Sub Type</option>
                 <option value="name">Task Name</option>
-              </select>
+              </select>*/}
               <input
                 type="text"
                 placeholder="Type to search"
@@ -214,51 +168,19 @@ const TaskTable = () => {
               <thead>
                 <tr>
                   <th>Action</th>
-                  <th>
-                    <div className="th-content">
-                      <span>Task Id</span>
-                      <FaSort className="sort-icon" />
-                    </div>
-                  </th>
-                  <th>
-                    <div className="th-content">
-                      <span>Priority</span>
-                      <FaSort className="sort-icon" />
-                    </div>
-                  </th>
-                  <th>
-                    <div className="th-content">
-                      <span>Created By</span>
-                      <FaSort className="sort-icon" />
-                    </div>
-                  </th>
-                  <th>
-                    <div className="th-content">
-                      <span>Type</span>
-                      <FaSort className="sort-icon" />
-                    </div>
-                  </th>
-                  <th>
-                    <div className="th-content">
-                      <span>Sub Type</span>
-                      <FaSort className="sort-icon" />
-                    </div>
-                  </th>
-                  <th>
-                    <div className="th-content">
-                      <span>Task Name</span>
-                      <FaSort className="sort-icon" />
-                    </div>
-                  </th>
+                  <th><div className="th-content"><span>Task Id</span><FaSort className="sort-icon" /></div></th>
+                  <th><div className="th-content"><span>Priority</span><FaSort className="sort-icon" /></div></th>
+                  <th><div className="th-content"><span>Created By</span><FaSort className="sort-icon" /></div></th>
+                  <th><div className="th-content"><span>Type</span><FaSort className="sort-icon" /></div></th>
+                  <th><div className="th-content"><span>Sub Type</span><FaSort className="sort-icon" /></div></th>
+                  <th><div className="th-content"><span>Task Name</span><FaSort className="sort-icon" /></div></th>
                 </tr>
               </thead>
               <tbody>
                 {currentTasks.length > 0 ? (
                   currentTasks.map((task, idx) => (
                     <tr key={idx}>
-                      <td>
-                        <button>⋮</button>
-                      </td>
+                      <td><button>⋮</button></td>
                       <td>{task.id}</td>
                       <td>{task.priority}</td>
                       <td>{task.createdBy}</td>

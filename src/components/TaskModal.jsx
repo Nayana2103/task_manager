@@ -3,7 +3,7 @@ import { Modal, message } from "antd";
 import { useForm } from "react-hook-form";
 import "../styles/TaskModal.css";
 
-const TaskModal = ({ isOpen, onClose }) => {
+const TaskModal = ({ isOpen, onClose, onAddTask}) => {
   const [priority, setPriority] = useState("Medium");
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -42,12 +42,37 @@ const TaskModal = ({ isOpen, onClose }) => {
     }
   };
 
-  const onSubmit = (data) => {
+  /**const onSubmit = (data) => {
+    if (onAddTask) {
+      onAddTask({
+        ...data,
+        id: Date.now(), // unique ID for table
+        priority,
+        status: data.status || "Open",
+      });
+    }
     console.log("Form Submitted:", data);
     messageApi.success("Task created successfully");
     reset();
     onClose();
-  };
+  };**/
+  const onSubmit = (data) => {
+  if (onAddTask) {
+    onAddTask({
+      id: "T" + Date.now(),        // similar format as dummyData
+      priority,
+      createdBy: "Mohamed Rifthy", // hardcoded for now
+      type: data.taskType,
+      subType: data.engagement || "-", 
+      name: data.taskName,
+      status: data.status || "Open",
+    });
+  }
+  messageApi.success("Task created successfully");
+  reset();
+  onClose();
+};
+
 
   return (
     <>
