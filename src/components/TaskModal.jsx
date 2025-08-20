@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal, message } from "antd";
 import { useForm } from "react-hook-form";
 import "../styles/TaskModal.css";
@@ -13,18 +13,21 @@ const TaskModal = ({ isOpen, onClose }) => {
     formState: { errors },
     reset,
     watch,
-    setError,
-    clearErrors,
+    trigger, // 👈 used for live validation
   } = useForm();
 
   const emailValue = watch("email");
   const phoneValue = watch("phone");
 
+  // Live validation when one of them changes
   useEffect(() => {
-    // If email is filled, clear phone's "required" error (and vice versa)
-    if (emailValue?.trim()) clearErrors("phone");
-    if (phoneValue?.trim()) clearErrors("email");
-  }, [emailValue, phoneValue, clearErrors]);
+    if (emailValue) {
+      trigger("phone");
+    }
+    if (phoneValue) {
+      trigger("email");
+    }
+  }, [emailValue, phoneValue, trigger]);
 
   const getPriorityClass = () => {
     switch (priority) {
@@ -40,18 +43,6 @@ const TaskModal = ({ isOpen, onClose }) => {
   };
 
   const onSubmit = (data) => {
-    const hasEmail = !!data.email?.trim();
-    const hasPhone = !!data.phone?.trim();
-
-    // Enforce: at least one of email or phone is present
-    if (!hasEmail && !hasPhone) {
-      setError("email", { type: "manual", message: "Provide Email or Phone" });
-      setError("phone", { type: "manual", message: "Provide Phone or Email" });
-      return;
-    } else {
-      clearErrors(["email", "phone"]);
-    }
-
     console.log("Form Submitted:", data);
     messageApi.success("Task created successfully");
     reset();
@@ -81,7 +72,6 @@ const TaskModal = ({ isOpen, onClose }) => {
               {/* ==== Guest Details ==== */}
               <h3 className="section-title">Guest Details</h3>
               <div className="form-grid">
-                {/* Full width Name */}
                 <div className="form-group full">
                   <label>Name</label>
                   <input
@@ -91,38 +81,57 @@ const TaskModal = ({ isOpen, onClose }) => {
                   />
                   {errors.name && <p className="error">{errors.name.message}</p>}
                 </div>
+              </div>
 
-                {/* Full width Email */}
-                <div className="form-group full">
+              {/* Email OR Phone */}
+              <div className="form-grid-inline">
+                {/* Email */}
+                <div className="form-group half">
                   <label>Email</label>
                   <input
                     type="email"
                     placeholder="Enter Email"
                     {...register("email", {
-                      // Only validate format if a value is provided
-                      validate: (v) =>
-                        !v || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) || "Invalid email format",
+                      validate: (v) => {
+                        if (!v && !phoneValue) {
+                          return "Email is required";
+                        }
+                        if (v && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) {
+                          return "Invalid email format";
+                        }
+                        return true;
+                      },
                     })}
                   />
-                  {errors.email && <p className="error">{errors.email.message}</p>}
+                  {errors.email && (
+                    <p className="error">{errors.email.message}</p>
+                  )}
                 </div>
 
-                {/* OR Separator */}
-                <div className="or-separator">OR</div>
+                {/* OR separator */}
+                <div className="or-center">OR</div>
 
-                {/* Full width Phone */}
-                <div className="form-group full">
+                {/* Phone */}
+                <div className="form-group half">
                   <label>Phone</label>
                   <input
                     type="tel"
                     placeholder="Enter Phone"
                     {...register("phone", {
-                      // Only validate format if a value is provided
-                      validate: (v) =>
-                        !v || /^[0-9]{10}$/.test(v) || "Invalid phone number",
+                      validate: (v) => {
+                        if (!v && !emailValue) {
+                          return "Phone is required";
+                        }
+                        if (v && !/^[0-9]{10}$/.test(v)) {
+                          return "Invalid phone number";
+                        }
+                        return true;
+                      },
                     })}
                   />
-                  {errors.phone && <p className="error">{errors.phone.message}</p>}
+                  {errors.phone && (
+                    <p className="error">{errors.phone.message}</p>
+                  )}
                 </div>
               </div>
 
@@ -139,7 +148,9 @@ const TaskModal = ({ isOpen, onClose }) => {
                 <div className="form-group half">
                   <label>Assigned To</label>
                   <select
-                    {...register("assignedTo", { required: "Please select an agent" })}
+                    {...register("assignedTo", {
+                      required: "Please select an agent",
+                    })}
                   >
                     <option value="">Select Agent</option>
                     <option value="Agent A">Agent A</option>
@@ -165,7 +176,9 @@ const TaskModal = ({ isOpen, onClose }) => {
                 <div className="form-group full">
                   <label>Task Type</label>
                   <select
-                    {...register("taskType", { required: "Task type is required" })}
+                    {...register("taskType", {
+                      required: "Task type is required",
+                    })}
                   >
                     <option value="">Select Type</option>
                     <option value="Bug">Bug</option>
@@ -181,7 +194,9 @@ const TaskModal = ({ isOpen, onClose }) => {
                   <label>Task Details</label>
                   <textarea
                     placeholder="Enter Details"
-                    {...register("details", { required: "Task details are required" })}
+                    {...register("details", {
+                      required: "Task details are required",
+                    })}
                   ></textarea>
                   {errors.details && (
                     <p className="error">{errors.details.message}</p>
@@ -216,7 +231,11 @@ const TaskModal = ({ isOpen, onClose }) => {
 
                 <div className="form-group full">
                   <label>Engagement</label>
-                  <input type="text" placeholder="Enter Engagement" {...register("engagement")} />
+                  <input
+                    type="text"
+                    placeholder="Enter Engagement"
+                    {...register("engagement")}
+                  />
                 </div>
 
                 <div className="form-group half">
@@ -230,7 +249,10 @@ const TaskModal = ({ isOpen, onClose }) => {
 
                 <div className="form-group full">
                   <label>Remarks</label>
-                  <textarea placeholder="Enter Remarks" {...register("remarks")}></textarea>
+                  <textarea
+                    placeholder="Enter Remarks"
+                    {...register("remarks")}
+                  ></textarea>
                 </div>
               </div>
 

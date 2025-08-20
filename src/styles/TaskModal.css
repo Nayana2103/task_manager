@@ -19,44 +19,61 @@
   overflow-y: auto;
   scroll-behavior: smooth;
 }
-/* Section Title (small spacing) */
+.TaskModal .task-form::-webkit-scrollbar {
+  display: none;
+}
+
+/* Section Title */
 .TaskModal .section-title {
   font-size: 14px;
   font-weight: 600;
   margin: 12px 0 8px 0;
   color: #333;
 }
-
-/* OR badge centered across the grid */
-.TaskModal .or-separator {
-  grid-column: span 2;
-  display: inline-flex;
+.email-phone-wrapper {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
-  font-size: 11px;
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.email-phone-wrapper .form-group {
+  flex: 1;
+}
+
+.or-center {
+  flex: 0 0 auto;
+  margin: 0 12px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #555;
+  text-align: center;
+  align-self: flex-end;
+  padding-bottom: 6px; /* aligns with input box */
+}
+
+
+/* ===== Inline Email | OR | Phone ===== */
+.TaskModal .form-grid-inline {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr; /* email | OR | phone */
+  gap: 20px;
+  align-items: center; /* aligns OR vertically with inputs */
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.TaskModal .form-grid-inline .form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.TaskModal .or-inline {
+  font-size: 12px;
   font-weight: 600;
   color: #555;
-  margin: 2px 0 6px 0;
-  position: relative;
-}
-
-.TaskModal .or-separator::before,
-.TaskModal .or-separator::after {
-  content: "";
-  flex: 1 1 auto;
-  height: 1px;
-  background: #e5e7eb;
-}
-
-.TaskModal .or-separator::before { margin-right: 8px; }
-.TaskModal .or-separator::after { margin-left: 8px; }
-
-
-
-
-.TaskModal .task-form::-webkit-scrollbar {
-  display: none;
+  text-align: center;
+  white-space: nowrap;
 }
 
 /* ===== Title ===== */
@@ -154,6 +171,7 @@
   display: none !important;
 }
 
+/* ===== Error ===== */
 .TaskModal .error {
   color: #dc2626;
   font-size: 12px;
