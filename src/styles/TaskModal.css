@@ -19,6 +19,41 @@
   overflow-y: auto;
   scroll-behavior: smooth;
 }
+/* Section Title (small spacing) */
+.TaskModal .section-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 12px 0 8px 0;
+  color: #333;
+}
+
+/* OR badge centered across the grid */
+.TaskModal .or-separator {
+  grid-column: span 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #555;
+  margin: 2px 0 6px 0;
+  position: relative;
+}
+
+.TaskModal .or-separator::before,
+.TaskModal .or-separator::after {
+  content: "";
+  flex: 1 1 auto;
+  height: 1px;
+  background: #e5e7eb;
+}
+
+.TaskModal .or-separator::before { margin-right: 8px; }
+.TaskModal .or-separator::after { margin-left: 8px; }
+
+
+
 
 .TaskModal .task-form::-webkit-scrollbar {
   display: none;
